@@ -12,7 +12,7 @@ It's up to you...
 - algorithmic sequencer  
 - sample mangler
 - midi router  
-- sound generator  
+- sound generator (many thanks to Tim Barrass for the Mozzi library)
 
+It's a fully programmable fuckery, enjoy it!
 
-fully programmable fuckery 
