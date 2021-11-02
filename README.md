@@ -1,8 +1,8 @@
 # multi
 usb to 5din midi converter  
-noise blaster
+noise blaster  
 midi filter  
-algorithmic sequencer
+algorithmic sequencer  
 midi router  
 sound generator  
 
