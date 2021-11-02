@@ -10,7 +10,7 @@
   
   6 midi cc + 6 oscillators drone with 6 lfos
   -------------------------------------------
-  KNOB 1 to 6   - oscillator frequency and midi CC from 80 to 86
+  KNOB 1 to 6   - oscillator frequency and midi CC from 80 to 85
   PB1           - drone on/off
   PB2           - lfos on/off
 
