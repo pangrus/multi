@@ -6,5 +6,6 @@ algorithmic sequencer
 midi router  
 sound generator  
 
+fully programmable
 
 ...it's up to you
