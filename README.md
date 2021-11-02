@@ -14,5 +14,5 @@ It's up to you...
 - midi router  
 - sound generator (many thanks to Tim Barrass for the ![Mozzi library](https://github.com/sensorium/Mozzi))
 
-It's a fully programmable fuckery, enjoy it!
+It's fully programmable, enjoy it!
 
