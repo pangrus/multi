@@ -1,2 +1,2 @@
 # multi
-usb to 5 din midi converter-filter-router, sound generator
+usb to 5din midi converter-filter-router, sound generator
