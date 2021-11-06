@@ -1,9 +1,9 @@
-# multi
+## multi
 
 ![multi](multi_img/multi1896.jpg)
 
 
-What is multi?
+# What is multi?
 It's up to you...
 
 - usb to 5din midi converter  
@@ -14,5 +14,4 @@ It's up to you...
 - midi router  
 - sound generator (many thanks to Tim Barrass for the ![Mozzi library](https://github.com/sensorium/Mozzi))
 
-It's fully programmable, enjoy it!
 
