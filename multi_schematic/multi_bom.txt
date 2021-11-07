@@ -1,0 +1,19 @@
+---------------------
+- Bill of materials -
+---------------------
+
+C1 	        100nF 	    100V 5% Polyester Capacitor
+C2 	        1uF 	    50V 105C Radial Electrolytic Capacitor 5x11mm
+D1 	        1N4148 	    100V 0.15A standard switching diode
+J1 	        MIDI IN 	5-pin DIN connector
+J2 	        MIDI OUT 	5-pin DIN connector
+J3 	        OUT 	    3.5mm Stereo Audio Jack
+KNOB 1-66 	100K 	    Potentiometer Song Huei RK0904N
+PB1, PB2 	Pushbutton  C&K D6R60
+R1, R6 	    470         Resistor 1/4W
+R2, R3 	    47          Resistor 1/4W
+R4 	        220 	    Resistor 1/4W
+R5 	        4,7K 	    Resistor 1/4W
+U1 	        6N138 	    Low Input Current high Gain Optocoupler
+U2 	        XIAO 	    Seeeduino XIAO
+
