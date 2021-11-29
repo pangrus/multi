@@ -11,7 +11,6 @@ It has 6 potentiometers, 2 pushbuttons and a 1/8" audio out connected to the Xia
 
 - advanced midi controller
 - usb to 5din midi converter  
-- noise blaster  
 - midi filter  
 - algorithmic sequencer  
 - sample mangler
