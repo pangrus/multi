@@ -201,7 +201,7 @@ void updateControl() {
   Sin5.setFreq(freq[5]);
 }
 
-AudioOutput_t updateAudio() {
+int updateAudio() {
   if (!modePB1) {
     out = (
             Sin0.next() * amplitude0 +
@@ -209,13 +209,12 @@ AudioOutput_t updateAudio() {
             Sin2.next() * amplitude2 +
             Sin3.next() * amplitude3 +
             Sin4.next() * amplitude4 +
-            Sin5.next() * amplitude5 ) >> 10;
+            Sin5.next() * amplitude5 ) >> 8;
   }
   else {
     out = 0;
   }
-
-  return MonoOutput::from8Bit(out);
+  return out;
 }
 
 void loop() {
