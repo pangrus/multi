@@ -209,7 +209,7 @@ int updateAudio() {
             Sin2.next() * amplitude2 +
             Sin3.next() * amplitude3 +
             Sin4.next() * amplitude4 +
-            Sin5.next() * amplitude5 ) >> 8;
+            Sin5.next() * amplitude5 ) >> 9;
   }
   else {
     out = 0;
