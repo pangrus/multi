@@ -12,10 +12,6 @@
   pangrus 2021
 */
 
-
-
-
-
 #include <Adafruit_TinyUSB.h>
 #include <MIDI.h>
 
