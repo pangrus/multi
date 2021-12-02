@@ -80,7 +80,7 @@ void setup() {
   MIDI_DIN.begin(MIDI_CHANNEL_OMNI);
   MIDI_DIN.turnThruOff();
   // ADC resolution
-  analogReadResolution(8);
+  analogReadResolution(9);
   startMozzi(CONTROL_RATE);
   pinMode(PB1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
@@ -157,39 +157,39 @@ void updateControl() {
       switch (i) {
         case 0:
           // attack
-          MIDI_USB.sendControlChange(73, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(73, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(73, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(73, actualKnob[i] >> 2, 1);
           break;
         case 1:
           // decay
-          MIDI_USB.sendControlChange(80, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(80, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(80, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(80, actualKnob[i] >> 2, 1);
           break;
         case 2:
           // sustain
-          MIDI_USB.sendControlChange(64, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(64, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(64, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(64, actualKnob[i] >> 2, 1);
           break;
         case 3:
           // release
-          MIDI_USB.sendControlChange(72, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(72, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(72, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(72, actualKnob[i] >> 2, 1);
           break;
         case 4:
           // cutoff
-          MIDI_USB.sendControlChange(74, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(74, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(74, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(74, actualKnob[i] >> 2, 1);
           break;
         case 5:
           // resonance
-          MIDI_USB.sendControlChange(71, actualKnob[i] >> 1, 1);
-          MIDI_DIN.sendControlChange(71, actualKnob[i] >> 1, 1);
+          MIDI_USB.sendControlChange(71, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(71, actualKnob[i] >> 2, 1);
           break;
       }
       storedKnob[i] = actualKnob[i];
     }
     // tuned drone
-    midiNote[i] = map (actualKnob[i], 0, 256, 48, 84);
+    midiNote[i] = map (actualKnob[i], 0, 511, 36, 72);
     freq[i] = mtof(midiNote[i]);
   }
   // set the oscillators frequencies
