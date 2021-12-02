@@ -17,10 +17,6 @@ It has 6 potentiometers, 2 pushbuttons and a 1/8" audio out connected to the Xia
 - midi router  
 - sound generator (many thanks to Tim Barrass for the ![Mozzi library](https://github.com/sensorium/Mozzi))
 
-The project is open hardware/open source, released under a 
+The project is open hardware/open source.
 
-In the _multi_gerber_ directory you can find the fabrication files.
-
-The _multi_software_ directory contains the software written so far.
-
-
+In the _multi_gerber_ directory you can find the fabrication files and the _multi_software_ directory contains the software written so far.
