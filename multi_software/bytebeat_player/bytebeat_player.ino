@@ -8,7 +8,8 @@
   
   bytebeat player
   
-  pangrus 2021
+  CC BY-NC-SA
+  pangrus 2021  
 */
 
 #include <TimerTC3.h>
