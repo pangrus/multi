@@ -9,6 +9,7 @@
   midi converter 
   USB MIDI <---> MIDI DIN
 
+  CC BY-NC-SA
   pangrus 2021
 */
 
