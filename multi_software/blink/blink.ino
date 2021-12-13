@@ -5,12 +5,11 @@
   | '_ ` _ \| | | | | __| |
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
-
-    blink
-    -----------
-    blinks all leds
-
-    pangrus 2021
+  
+  blink
+  
+  CC BY-NC-SA
+  pangrus 2021
 */
 
 int blinkTime = 200;
