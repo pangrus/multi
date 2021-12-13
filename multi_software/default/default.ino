@@ -14,6 +14,7 @@
   PB1           - drone on/off
   PB2           - lfos on/off
 
+  CC BY-NC-SA
   pangrus 2021
 */
 
