@@ -8,6 +8,7 @@
 
   hardware test
 
+  CC BY-NC-SA
   pangrus 2021
 */
 
