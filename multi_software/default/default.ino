@@ -8,7 +8,9 @@
 
   default software
 
-  6 midi cc + 6 oscillators drone with 6 lfos
+  midi controller with 6 MIDI control change
+  6 oscillators drone generator with 6 lfos
+  
   -------------------------------------------
   KNOB 1 to 6   - oscillator frequency and midi controller
   PB1           - drone on/off
@@ -25,26 +27,26 @@
 // oscillators template
 #include <Oscil.h>
 // wavetable
-#include <tables/sin2048_int8.h>
+#include <tables/triangle2048_int8.h>
 // midi stuff
 #include <MIDI.h>
 #include <Adafruit_TinyUSB.h>   //tested on version 0.10.5
 
-// 6 oscillators with sinusoidal waveform
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin0(SIN2048_DATA);
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin1(SIN2048_DATA);
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin2(SIN2048_DATA);
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin3(SIN2048_DATA);
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin4(SIN2048_DATA);
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> Sin5(SIN2048_DATA);
+// 6 oscillators
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator0(TRIANGLE2048_DATA);
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator1(TRIANGLE2048_DATA);
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator2(TRIANGLE2048_DATA);
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator3(TRIANGLE2048_DATA);
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator4(TRIANGLE2048_DATA);
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator5(TRIANGLE2048_DATA);
 
 // 6 lfos
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo0(SIN2048_DATA);
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo1(SIN2048_DATA);
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo2(SIN2048_DATA);
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo3(SIN2048_DATA);
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo4(SIN2048_DATA);
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo5(SIN2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo0(TRIANGLE2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo1(TRIANGLE2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo2(TRIANGLE2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo3(TRIANGLE2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo4(TRIANGLE2048_DATA);
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo5(TRIANGLE2048_DATA);
 
 // variables
 int actualKnob[] = {0, 0, 0, 0, 0, 0};
@@ -131,16 +133,17 @@ void updateControl() {
   }
   lastPB2State = readPB2;
 
+  // lfo
   if (!modePB2) {
-    amplitude0 = lfo0.next();
-    amplitude1 = lfo1.next();
-    amplitude2 = lfo2.next();
-    amplitude3 = lfo3.next();
-    amplitude4 = lfo4.next();
-    amplitude5 = lfo5.next();
+    amplitude0 = map (lfo0.next(), -127, 127, 2, 253);
+    amplitude1 = map (lfo1.next(), -127, 127, 2, 253);
+    amplitude2 = map (lfo2.next(), -127, 127, 2, 253);
+    amplitude3 = map (lfo3.next(), -127, 127, 2, 253);
+    amplitude4 = map (lfo4.next(), -127, 127, 2, 253);
+    amplitude5 = map (lfo5.next(), -127, 127, 2, 253);
   }
   else {
-    amplitude0 = amplitude1 = amplitude2 = amplitude3 = amplitude4 = amplitude5 = 127;
+    amplitude0 = amplitude1 = amplitude2 = amplitude3 = amplitude4 = amplitude5 = 200;
   }
 
   // read pots
@@ -188,29 +191,29 @@ void updateControl() {
           break;
       }
       storedKnob[i] = actualKnob[i];
+      // tuned drone
+      midiNote[i] = map (actualKnob[i], 0, 511, 36, 72);
+      freq[i] = mtof(midiNote[i]);
     }
-    // tuned drone
-    midiNote[i] = map (actualKnob[i], 0, 511, 36, 72);
-    freq[i] = mtof(midiNote[i]);
   }
   // set the oscillators frequencies
-  Sin0.setFreq(freq[0]);
-  Sin1.setFreq(freq[1]);
-  Sin2.setFreq(freq[2]);
-  Sin3.setFreq(freq[3]);
-  Sin4.setFreq(freq[4]);
-  Sin5.setFreq(freq[5]);
+  oscillator0.setFreq(freq[0]);
+  oscillator1.setFreq(freq[1]);
+  oscillator2.setFreq(freq[2]);
+  oscillator3.setFreq(freq[3]);
+  oscillator4.setFreq(freq[4]);
+  oscillator5.setFreq(freq[5]);
 }
 
 int updateAudio() {
   if (!modePB1) {
     out = (
-            Sin0.next() * amplitude0 +
-            Sin1.next() * amplitude1 +
-            Sin2.next() * amplitude2 +
-            Sin3.next() * amplitude3 +
-            Sin4.next() * amplitude4 +
-            Sin5.next() * amplitude5 ) >> 10;
+            oscillator0.next() * amplitude0 +
+            oscillator1.next() * amplitude1 +
+            oscillator2.next() * amplitude2 +
+            oscillator3.next() * amplitude3 +
+            oscillator4.next() * amplitude4 +
+            oscillator5.next() * amplitude5 ) >> 9;
   }
   else {
     out = 0;
