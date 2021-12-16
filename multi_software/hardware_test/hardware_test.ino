@@ -12,9 +12,12 @@
   pangrus 2021
 */
 
+// knob variables
 byte knob[] =  {0, 0, 0, 0, 0, 0, 0};
 byte oldknob[] = {0, 0, 0, 0, 0, 0, 0};
 byte knobThreshold = 5;
+
+// pushbutton variables
 byte pb1Pin = 9;
 byte pb2Pin = 10;
 bool readPb1;
@@ -28,6 +31,14 @@ bool lastPb2State = LOW;
 long lastDebounceTime = 0;
 long debounceDelay = 50;
 
+// blink variables
+bool ledState;
+byte blinks;
+byte selectedKnob;
+unsigned long currentMillis = 0;
+unsigned long previousMillis = 0;
+unsigned long blinkTime = 200;
+
 void setup() {
   // USB serial
   SerialUSB.begin(115200);
@@ -37,10 +48,30 @@ void setup() {
   pinMode(PIN_LED2, OUTPUT);
   pinMode(pb2Pin, INPUT_PULLUP);
   pinMode(PIN_LED3, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void ManageBlinks() {
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= blinkTime) {
+    previousMillis = currentMillis;
+    if (ledState == LOW) ledState = HIGH;
+    else {
+      ledState = LOW;
+      blinks++;
+      if (blinks > selectedKnob) {
+        blinks = 0;
+        ledState = HIGH;
+      }
+    }
+    digitalWrite(LED_BUILTIN, ledState);
+  }
 }
 
 void loop() {
-  
+  // blinks the built in led accordingly to the last selected knob
+  ManageBlinks();
+
   // pb1 management
   readPb1 = digitalRead(pb1Pin);
   if (readPb1 != lastPb1State) {
@@ -58,7 +89,7 @@ void loop() {
     }
   }
   lastPb1State = readPb1;
-  
+
   // pb2 management
   readPb2 = digitalRead(pb2Pin);
   if (readPb2 != lastPb2State) {
@@ -76,7 +107,7 @@ void loop() {
     }
   }
   lastPb2State = readPb2;
-  
+
   // read knobs
   knob[1] = analogRead(1);
   knob[2] = analogRead(2);
@@ -91,6 +122,7 @@ void loop() {
       Serial.print(" = ");
       Serial.println(knob[i]);
       oldknob[i] = knob[i];
+      selectedKnob = i;
     }
   }
 }
