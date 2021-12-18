@@ -108,7 +108,7 @@ void DinHandleClock() {
 }
 
 int updateAudio() {
-  out = aBamboo1.next() + aBamboo2.next();
+  out = (aBamboo1.next() + aBamboo2.next()) << 4;
   return out;
 }
 
