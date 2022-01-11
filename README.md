@@ -1,6 +1,6 @@
 ## multi
 
-![multi](multi_img/multi600.png)
+![multi](multi_img/multi1_600.jpg)
 
 ### What is multi?
 It's a PCB (shield/hat) hosting a seeeduino [Xiao](https://wiki.seeedstudio.com/Seeeduino-XIAO/).
