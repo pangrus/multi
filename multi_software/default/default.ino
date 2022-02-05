@@ -12,9 +12,9 @@
   6 oscillators drone generator with 6 lfos
 
   -------------------------------------------
-  KNOB 1 to 6   - oscillator frequency and midi controller
-  PB1           - drone on/off
-  PB2           - lfos on/off
+  Knobs 1 to 6   - oscillator frequency and midi controller
+  Pb1           - drone on/off
+  Pb2           - lfos on/off
 
   CC BY-NC-SA
   pangrus 2021
@@ -69,14 +69,14 @@ int storedKnob[] = {0, 0, 0, 0, 0, 0};
 int thresholdValue = 12;
 
 // pushbuttons management variables
-byte PB1Pin = 9;
-byte PB1State;
-bool lastPB1State = LOW;
-bool modePB1 = HIGH;
-byte PB2Pin = 10;
-byte PB2State;
-bool lastPB2State = LOW;
-bool modePB2 = HIGH;
+byte Pb1Pin = 9;
+byte Pb1State;
+bool lastPb1State = LOW;
+bool modePb1 = HIGH;
+byte Pb2Pin = 10;
+byte Pb2State;
+bool lastPb2State = LOW;
+bool modePb2 = HIGH;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 20;
 
@@ -98,9 +98,9 @@ void setup() {
   analogReadResolution(9);
   analogWriteResolution(10);
   startMozzi(CONTROL_RATE);
-  pinMode(PB1Pin, INPUT_PULLUP);
+  pinMode(Pb1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
-  pinMode(PB2Pin, INPUT_PULLUP);
+  pinMode(Pb2Pin, INPUT_PULLUP);
   pinMode(PIN_LED3, OUTPUT);
   // lfo frequencies
   lfo0.setFreq(0.0161f);
@@ -114,40 +114,40 @@ void setup() {
 void updateControl() {
   MIDI_USB.read();
 
-  // PB1 management - drone on-off
-  bool readPB1 = digitalRead(PB1Pin);
-  if (readPB1 != lastPB1State) {
+  // Pb1 management
+  bool readPb1 = digitalRead(Pb1Pin);
+  if (readPb1 != lastPb1State) {
     lastDebounceTime = millis();
   }
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (readPB1 != PB1State) {
-      PB1State = readPB1;
-      if (PB1State == LOW) {
-        modePB1 = !modePB1;
-        digitalWrite (PIN_LED3, modePB1);
+    if (readPb1 != Pb1State) {
+      Pb1State = readPb1;
+      if (Pb1State == LOW) {
+        modePb1 = !modePb1;
+        digitalWrite (PIN_LED3, modePb1);
       }
     }
   }
-  lastPB1State = readPB1;
+  lastPb1State = readPb1;
 
-  // PB2 management - lfos on/off
-  bool readPB2 = digitalRead(PB2Pin);
-  if (readPB2 != lastPB2State) {
+  // Pb2 management
+  bool readPb2 = digitalRead(Pb2Pin);
+  if (readPb2 != lastPb2State) {
     lastDebounceTime = millis();
   }
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (readPB2 != PB2State) {
-      PB2State = readPB2;
-      if (PB2State == LOW) {
-        modePB2 = !modePB2;
-        digitalWrite (PIN_LED2, modePB2);
+    if (readPb2 != Pb2State) {
+      Pb2State = readPb2;
+      if (Pb2State == LOW) {
+        modePb2 = !modePb2;
+        digitalWrite (PIN_LED2, modePb2);
       }
     }
   }
-  lastPB2State = readPB2;
+  lastPb2State = readPb2;
 
   // lfo
-  if (!modePB2) {
+  if (!modePb2) {
     amplitude0 = map (lfo0.next(), -127, 127, 2, 253);
     amplitude1 = map (lfo1.next(), -127, 127, 2, 253);
     amplitude2 = map (lfo2.next(), -127, 127, 2, 253);
@@ -213,7 +213,7 @@ void updateControl() {
 }
 
 int updateAudio() {
-  if (!modePB1) {
+  if (!modePb1) {
     out = ( oscillator0.next() * amplitude0 +
             oscillator1.next() * amplitude1 +
             oscillator2.next() * amplitude2 +
