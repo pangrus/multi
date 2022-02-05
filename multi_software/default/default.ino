@@ -6,11 +6,11 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  default software
+  default software V1.0
 
   midi controller with 6 MIDI control change
   6 oscillators drone generator with 6 lfos
-  
+
   -------------------------------------------
   KNOB 1 to 6   - oscillator frequency and midi controller
   PB1           - drone on/off
@@ -32,6 +32,14 @@
 #include <MIDI.h>
 #include <Adafruit_TinyUSB.h>   //tested on version 0.10.5
 
+// assign CC to knobs
+#define CC_KNOB1 73     // attack
+#define CC_KNOB2 80     // decay
+#define CC_KNOB3 64     // sustain
+#define CC_KNOB4 72     // release
+#define CC_KNOB5 74     // cutoff
+#define CC_KNOB6 71     // resonance
+
 // 6 oscillators
 Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator0(TRIANGLE2048_DATA);
 Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator1(TRIANGLE2048_DATA);
@@ -48,25 +56,29 @@ Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo3(TRIANGLE2048_DATA);
 Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo4(TRIANGLE2048_DATA);
 Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo5(TRIANGLE2048_DATA);
 
-// variables
+// sound generation variables
+byte midiNote[6];
+byte amplitude0, amplitude1, amplitude2, amplitude3, amplitude4, amplitude5;
+int freq[6];
+float lfoFreq0, lfoFreq1, lfoFreq2, lfoFreq3, lfoFreq4, lfoFreq5;
+long out;
+
+// knobs management variables
 int actualKnob[] = {0, 0, 0, 0, 0, 0};
 int storedKnob[] = {0, 0, 0, 0, 0, 0};
 int thresholdValue = 12;
-long out;
-int freq[6];
-byte midiNote[6];
+
+// pushbuttons management variables
 byte PB1Pin = 9;
 byte PB1State;
-byte PB2Pin = 10;
-byte PB2State;
 bool lastPB1State = LOW;
 bool modePB1 = HIGH;
+byte PB2Pin = 10;
+byte PB2State;
 bool lastPB2State = LOW;
 bool modePB2 = HIGH;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 20;
-float lfoFreq0, lfoFreq1, lfoFreq2, lfoFreq3, lfoFreq4, lfoFreq5;
-byte amplitude0, amplitude1, amplitude2, amplitude3, amplitude4, amplitude5;
 
 // usb midi
 Adafruit_USBD_MIDI usb_midi;
@@ -84,6 +96,7 @@ void setup() {
   MIDI_DIN.turnThruOff();
   // ADC resolution
   analogReadResolution(9);
+  analogWriteResolution(10);
   startMozzi(CONTROL_RATE);
   pinMode(PB1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
@@ -160,34 +173,28 @@ void updateControl() {
 
       switch (i) {
         case 0:
-          // attack
-          MIDI_USB.sendControlChange(73, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(73, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB1, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB1, actualKnob[i] >> 2, 1);
           break;
         case 1:
-          // decay
-          MIDI_USB.sendControlChange(80, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(80, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB2, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB2, actualKnob[i] >> 2, 1);
           break;
         case 2:
-          // sustain
-          MIDI_USB.sendControlChange(64, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(64, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB3, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB3, actualKnob[i] >> 2, 1);
           break;
         case 3:
-          // release
-          MIDI_USB.sendControlChange(72, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(72, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB4, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB4, actualKnob[i] >> 2, 1);
           break;
         case 4:
-          // cutoff
-          MIDI_USB.sendControlChange(74, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(74, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB5, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB5, actualKnob[i] >> 2, 1);
           break;
         case 5:
-          // resonance
-          MIDI_USB.sendControlChange(71, actualKnob[i] >> 2, 1);
-          MIDI_DIN.sendControlChange(71, actualKnob[i] >> 2, 1);
+          MIDI_USB.sendControlChange(CC_KNOB6, actualKnob[i] >> 2, 1);
+          MIDI_DIN.sendControlChange(CC_KNOB6, actualKnob[i] >> 2, 1);
           break;
       }
       storedKnob[i] = actualKnob[i];
@@ -207,8 +214,7 @@ void updateControl() {
 
 int updateAudio() {
   if (!modePB1) {
-    out = (
-            oscillator0.next() * amplitude0 +
+    out = ( oscillator0.next() * amplitude0 +
             oscillator1.next() * amplitude1 +
             oscillator2.next() * amplitude2 +
             oscillator3.next() * amplitude3 +
