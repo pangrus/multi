@@ -69,12 +69,12 @@ int storedKnob[] = {0, 0, 0, 0, 0, 0};
 int thresholdValue = 12;
 
 // pushbuttons management variables
-byte Pb1Pin = 9;
-byte Pb1State;
+byte pb1Pin = 9;
+byte pb1State;
 bool lastPb1State = LOW;
 bool modePb1 = HIGH;
-byte Pb2Pin = 10;
-byte Pb2State;
+byte pb2Pin = 10;
+byte pb2State;
 bool lastPb2State = LOW;
 bool modePb2 = HIGH;
 unsigned long lastDebounceTime = 0;
@@ -98,9 +98,9 @@ void setup() {
   analogReadResolution(9);
   analogWriteResolution(10);
   startMozzi(CONTROL_RATE);
-  pinMode(Pb1Pin, INPUT_PULLUP);
+  pinMode(pb1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
-  pinMode(Pb2Pin, INPUT_PULLUP);
+  pinMode(pb2Pin, INPUT_PULLUP);
   pinMode(PIN_LED3, OUTPUT);
   // lfo frequencies
   lfo0.setFreq(0.0161f);
@@ -115,14 +115,14 @@ void updateControl() {
   MIDI_USB.read();
 
   // Pb1 management
-  bool readPb1 = digitalRead(Pb1Pin);
+  bool readPb1 = digitalRead(pb1Pin);
   if (readPb1 != lastPb1State) {
     lastDebounceTime = millis();
   }
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (readPb1 != Pb1State) {
-      Pb1State = readPb1;
-      if (Pb1State == LOW) {
+    if (readPb1 != pb1State) {
+      pb1State = readPb1;
+      if (pb1State == LOW) {
         modePb1 = !modePb1;
         digitalWrite (PIN_LED3, modePb1);
       }
@@ -131,14 +131,14 @@ void updateControl() {
   lastPb1State = readPb1;
 
   // Pb2 management
-  bool readPb2 = digitalRead(Pb2Pin);
+  bool readPb2 = digitalRead(pb2Pin);
   if (readPb2 != lastPb2State) {
     lastDebounceTime = millis();
   }
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (readPb2 != Pb2State) {
-      Pb2State = readPb2;
-      if (Pb2State == LOW) {
+    if (readPb2 != pb2State) {
+      pb2State = readPb2;
+      if (pb2State == LOW) {
         modePb2 = !modePb2;
         digitalWrite (PIN_LED2, modePb2);
       }
