@@ -70,12 +70,12 @@ int thresholdValue = 12;
 
 // pushbuttons management variables
 byte pb1Pin = 9;
-byte pb1State;
-bool lastPb1State = LOW;
-bool modePb1 = HIGH;
 byte pb2Pin = 10;
-byte pb2State;
+bool pb1State;
+bool pb2State;
+bool lastPb1State = LOW;
 bool lastPb2State = LOW;
+bool modePb1 = HIGH;
 bool modePb2 = HIGH;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 20;
@@ -171,6 +171,7 @@ void updateControl() {
     // if knobs have been moved generate midi cc
     if (abs(actualKnob[i] - storedKnob[i]) > thresholdValue) {
 
+      // send MIDI CC
       switch (i) {
         case 0:
           MIDI_USB.sendControlChange(CC_KNOB1, actualKnob[i] >> 2, 1);
@@ -198,11 +199,13 @@ void updateControl() {
           break;
       }
       storedKnob[i] = actualKnob[i];
-      // tuned drone
+      
+      // drone
       midiNote[i] = map (actualKnob[i], 0, 511, 36, 72);
       freq[i] = mtof(midiNote[i]);
     }
   }
+  
   // set the oscillators frequencies
   oscillator0.setFreq(freq[0]);
   oscillator1.setFreq(freq[1]);
