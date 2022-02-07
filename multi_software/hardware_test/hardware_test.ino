@@ -6,15 +6,20 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  hardware test
+  hardware test V1.0
+  ------------------
+  pb1 toggles led3
+  pb2 toggles led2
+  led1 blinks accordingly to the last moved knob
+  knobs values and pushbutton states are displayed in the serial monitor
 
   CC BY-NC-SA
   pangrus 2021
 */
 
 // knob variables
-byte knob[] =  {0, 0, 0, 0, 0, 0, 0};
-byte oldknob[] = {0, 0, 0, 0, 0, 0, 0};
+byte actualKnob[] = {0, 0, 0, 0, 0, 0, 0};
+byte storedKnob[] = {0, 0, 0, 0, 0, 0, 0};
 byte knobThreshold = 5;
 
 // pushbutton variables
@@ -40,10 +45,8 @@ unsigned long previousMillis = 0;
 unsigned long blinkTime = 200;
 
 void setup() {
-  // USB serial
-  SerialUSB.begin(115200);
-  // ADC resolution (up to 12 bit)
-  analogReadResolution(8);
+  SerialUSB.begin(115200); // USB serial
+  analogReadResolution(8); // ADC resolution (up to 12 bit)
   pinMode(pb1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
   pinMode(pb2Pin, INPUT_PULLUP);
@@ -51,27 +54,13 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void ManageBlinks() {
-  currentMillis = millis();
-  if (currentMillis - previousMillis >= blinkTime) {
-    previousMillis = currentMillis;
-    if (ledState == LOW) ledState = HIGH;
-    else {
-      ledState = LOW;
-      blinks++;
-      if (blinks > selectedKnob) {
-        blinks = 0;
-        ledState = HIGH;
-      }
-    }
-    digitalWrite(LED_BUILTIN, ledState);
-  }
+void loop() {
+  manageKnobs();
+  managePushbuttons();
+  manageBlinks();
 }
 
-void loop() {
-  // blinks the built in led accordingly to the last selected knob
-  ManageBlinks();
-
+void managePushbuttons() {
   // pb1 management
   readPb1 = digitalRead(pb1Pin);
   if (readPb1 != lastPb1State) {
@@ -89,7 +78,6 @@ void loop() {
     }
   }
   lastPb1State = readPb1;
-
   // pb2 management
   readPb2 = digitalRead(pb2Pin);
   if (readPb2 != lastPb2State) {
@@ -107,22 +95,40 @@ void loop() {
     }
   }
   lastPb2State = readPb2;
+}
 
-  // read knobs
-  knob[1] = analogRead(1);
-  knob[2] = analogRead(2);
-  knob[3] = analogRead(3);
-  knob[4] = analogRead(4);
-  knob[5] = analogRead(5);
-  knob[6] = analogRead(8);
-  for (int i = 1; i < 7; i++) {
-    if (abs(knob[i] - oldknob[i]) > knobThreshold) {
+void manageKnobs() {
+  actualKnob[0] = analogRead(1);
+  actualKnob[1] = analogRead(2);
+  actualKnob[2] = analogRead(3);
+  actualKnob[3] = analogRead(4);
+  actualKnob[4] = analogRead(5);
+  actualKnob[5] = analogRead(8);
+  for (int i = 0; i < 6; i++) {
+    if (abs(actualKnob[i] - storedKnob[i]) > knobThreshold) {
+      storedKnob[i] = actualKnob[i];
+      selectedKnob = i + 1;
       Serial.print("KNOB ");
-      Serial.print(i);
+      Serial.print(selectedKnob);
       Serial.print(" = ");
-      Serial.println(knob[i]);
-      oldknob[i] = knob[i];
-      selectedKnob = i;
+      Serial.println(storedKnob[i]);
     }
+  }
+}
+
+void manageBlinks() {
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= blinkTime) {
+    previousMillis = currentMillis;
+    if (ledState == LOW) ledState = HIGH;
+    else {
+      ledState = LOW;
+      blinks++;
+      if (blinks > selectedKnob) {
+        blinks = 0;
+        ledState = HIGH;
+      }
+    }
+    digitalWrite(LED_BUILTIN, ledState);
   }
 }
