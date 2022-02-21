@@ -201,7 +201,7 @@ void updateControl() {
       storedKnob[i] = actualKnob[i];
       
       // drone
-      midiNote[i] = map (actualKnob[i], 0, 511, 36, 72);
+      midiNote[i] = map (storedKnob[i], 0, 511, 36, 72);
       freq[i] = mtof(midiNote[i]);
     }
   }
