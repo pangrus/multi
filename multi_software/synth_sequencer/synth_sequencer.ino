@@ -85,7 +85,7 @@ int releaseTime;
 long out;
 float mainFrequency;
 
-// selectedPatterns are made by midi notes (-1 for pause)
+// patterns are made by midi notes (-1 for pause)
 const int pattern[8][16] = {
   {36, 39, 41, 39, 46, 44, 46, 48, 36, 39, 41, 39, 46, 44, 46, 48},   // On The Run
   {41, 36, 51, 36, 48, 36, 36, 48, 36, 48, 36, 48, 46, 36, 48, 36},   // Der Mussolini (The Mussolini)
