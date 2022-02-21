@@ -6,9 +6,9 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-   euclidean sequencer v0.21
+   euclidean sequencer v0.22
    -------------------------
-   receives midi clock, start/stop on the MIDI DIN input 
+   receives midi clock, start/stop on the MIDI DIN input
    generates euclidean rhythmes on the MIDI DIN output
    knob 1,2,3 selects number of beats to be played
    knob 4,5,6 pattern length
@@ -104,17 +104,17 @@ void loop() {
 }
 
 void HandleStart() {
-  SerialUSB.println("MIDI Start");
-  clockCounter = 0;
-  activeStep1 = 0;
-  activeStep2 = 0;
-  activeStep3 = 0;
   isStarted = 1;
+  clockCounter = 0;
+  activeStep1 = activeStep2 = activeStep3 = 0;
+  SerialUSB.println("MIDI Start");
 }
 
 void HandleStop() {
-  SerialUSB.println("MIDI Stop");
   isStarted = 0;
+  clockCounter = 0;
+  activeStep1 = activeStep2 = activeStep3 = 0;
+  SerialUSB.println("MIDI Stop");
 }
 
 void HandleClock() {
@@ -149,20 +149,20 @@ void manageKnobs() {
     if (abs(actualKnob[i] - storedKnob[i]) > knobThreshold) {
       storedKnob[i] = actualKnob[i];
       selectedKnob = i + 1;
-/*     
-      SerialUSB.print ("Knob ");
-      SerialUSB.print (i + 1);
-      SerialUSB.print (" value :");
-      SerialUSB.print (storedKnob[i]);
-      SerialUSB.println("--");
-      SerialUSB.println(beats1);
-      SerialUSB.println(beats2);
-      SerialUSB.println(beats3);
-      SerialUSB.println(length1);
-      SerialUSB.println(length2);
-      SerialUSB.println(length3);
-      SerialUSB.println("--");
-*/
+      /*
+            SerialUSB.print ("Knob ");
+            SerialUSB.print (i + 1);
+            SerialUSB.print (" value :");
+            SerialUSB.print (storedKnob[i]);
+            SerialUSB.println("--");
+            SerialUSB.println(beats1);
+            SerialUSB.println(beats2);
+            SerialUSB.println(beats3);
+            SerialUSB.println(length1);
+            SerialUSB.println(length2);
+            SerialUSB.println(length3);
+            SerialUSB.println("--");
+      */
 
     }
   }
