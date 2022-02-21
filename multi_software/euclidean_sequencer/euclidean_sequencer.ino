@@ -6,7 +6,7 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-   euclidean sequencer v0.19
+   euclidean sequencer v0.21
    -------------------------
    receives midi clock, start/stop on the MIDI DIN input 
    generates euclidean rhythmes on the MIDI DIN output
@@ -119,7 +119,6 @@ void HandleStop() {
 
 void HandleClock() {
   if (isStarted) {
-    MIDI_DIN.sendNoteOff (midiNote2, 0, 10);
     if (clockCounter == 0) {
       if (pattern[0][activeStep1] == 'x') MIDI_DIN.sendNoteOn (midiNote0, 127, 10);
       if (pattern[1][activeStep2] == 'x') MIDI_DIN.sendNoteOn (midiNote1, 127, 10);
