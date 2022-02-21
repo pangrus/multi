@@ -6,15 +6,16 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  synth_sequencer V0.19
+  synth_sequencer V0.21
   ---------------------
 
-  knob1 release
-  knob2 cutoff
-  knob3 resonance and detune, step advance amount
-  knob4 selects sequence 
-  knob5 transpose
-  knob6 tempo
+  knob1 synth release
+  knob2 synth cutoff
+  knob3 synth resonance and detune, step advance amount
+  knob4 selects sequence
+  knob5 transpose sequence
+  knob6 sequencer tempo
+  knobs 1 to 6 sends MIDI CC on USB and DIN connectors
 
   CC BY-NC-SA
   pangrus 2022
@@ -35,18 +36,34 @@ Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI_USB);
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI_DIN);
 
+// MIDI
+bool isUsbStarted = LOW;
+bool isDinStarted = LOW;
+bool isMidiNote = LOW;
+byte ppq24;
+byte usbChannel = 2;
+byte dinChannel = 3;
+
+// assign MIDI CC to knobs
+#define CC_KNOB1 73     // attack
+#define CC_KNOB2 80     // decay
+#define CC_KNOB3 64     // sustain
+#define CC_KNOB4 72     // release
+#define CC_KNOB5 74     // cutoff
+#define CC_KNOB6 71     // resonance
+
+// knobs are debounced and values are stored
+byte actualKnob[] = {0, 0, 0, 0, 0, 0, 0};
+byte storedKnob[] = {0, 0, 0, 0, 0, 0, 0};
+byte knobThreshold = 1;
+byte selectedKnob;
+
 // sequencer variables
 float bpm;
 byte lenght = 16;
 int selectedPattern = 0;
 int currentStep = 0;
 int note;
-
-// knobs are debounced and values are stored
-byte actualKnob[] = {0, 0, 0, 0, 0, 0, 0};
-byte storedKnob[] = {0, 0, 0, 0, 0, 0, 0};
-byte knobThreshold = 5;
-byte selectedKnob;
 
 // pushbuttons management variables
 bool readPb1;
@@ -59,12 +76,6 @@ bool lastPb1State = LOW;
 bool lastPb2State = LOW;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 30000;
-
-// MIDI
-bool isUsbStarted = LOW;
-bool isDinStarted = LOW;
-bool isMidiNote = LOW;
-byte ppq24;
 
 // sound generation variables
 byte cutoffFrequency;
@@ -106,14 +117,15 @@ void setup() {
   pinMode(PIN_LED3, OUTPUT);
   envelope.setTimes(0, 200000, 200000, 1000);
   SerialUSB.begin(115200);
-  MIDI_USB.begin(MIDI_CHANNEL_OMNI);
+  MIDI_USB.begin(usbChannel);
   MIDI_USB.setHandleStart(UsbHandleStart);
   MIDI_USB.setHandleStop(UsbHandleStop);
   MIDI_USB.setHandleNoteOn(UsbHandleNoteOn);
   MIDI_USB.setHandleNoteOff(UsbHandleNoteOff);
   MIDI_USB.setHandleClock(UsbHandleClock);
   MIDI_USB.setHandleControlChange(UsbHandleCC);
-  MIDI_DIN.begin(MIDI_CHANNEL_OMNI);
+  MIDI_USB.turnThruOff();
+  MIDI_DIN.begin(dinChannel);
   MIDI_DIN.setHandleStart(DinHandleStart);
   MIDI_DIN.setHandleStop(DinHandleStop);
   MIDI_DIN.setHandleNoteOn(DinHandleNoteOn);
@@ -134,7 +146,6 @@ void loop() {
   MIDI_USB.read();
   MIDI_DIN.read();
 }
-
 
 void updateControl() {
   managePushbuttons();
@@ -201,6 +212,35 @@ void manageKnobs() {
   actualKnob[5] = analogRead(8);
   for (int i = 0; i < 6; i++) {
     if (abs(actualKnob[i] - storedKnob[i]) > knobThreshold) {
+      
+      // send MIDI CC
+      switch (i) {
+        case 0:
+          MIDI_USB.sendControlChange(CC_KNOB1, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB1, actualKnob[i], dinChannel);
+          break;
+        case 1:
+          MIDI_USB.sendControlChange(CC_KNOB2, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB2, actualKnob[i], dinChannel);
+          break;
+        case 2:
+          MIDI_USB.sendControlChange(CC_KNOB3, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB3, actualKnob[i], dinChannel);
+          break;
+        case 3:
+          MIDI_USB.sendControlChange(CC_KNOB4, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB4, actualKnob[i], dinChannel);
+          break;
+        case 4:
+          MIDI_USB.sendControlChange(CC_KNOB5, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB5, actualKnob[i], dinChannel);
+          break;
+        case 5:
+          MIDI_USB.sendControlChange(CC_KNOB6, actualKnob[i], usbChannel);
+          MIDI_DIN.sendControlChange(CC_KNOB6, actualKnob[i], dinChannel);
+          break;
+      }
+      
       storedKnob[i] = actualKnob[i];
       selectedKnob = i + 1;
     }
