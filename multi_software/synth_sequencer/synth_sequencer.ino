@@ -6,7 +6,7 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  synth_sequencer V0.21
+  synth_sequencer V0.22
   ---------------------
 
   knob1 synth release
@@ -85,7 +85,7 @@ int releaseTime;
 long out;
 float mainFrequency;
 
-// patterns are made by midi notes (-1 for pause)
+// selectedPatterns are made by midi notes (-1 for pause)
 const int pattern[8][16] = {
   {36, 39, 41, 39, 46, 44, 46, 48, 36, 39, 41, 39, 46, 44, 46, 48},   // On The Run
   {41, 36, 51, 36, 48, 36, 36, 48, 36, 48, 36, 48, 46, 36, 48, 36},   // Der Mussolini (The Mussolini)
@@ -101,7 +101,6 @@ Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator1(SQUARE_ANALOGUE512_D
 Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator2(SQUARE_ANALOGUE512_DATA);
 Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator3(SQUARE_ANALOGUE512_DATA);
 Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator4(SQUARE_ANALOGUE512_DATA);
-Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator5(SQUARE_ANALOGUE512_DATA);
 ADSR <CONTROL_RATE, AUDIO_RATE> envelope;
 LowPassFilter lowPass;
 
@@ -170,10 +169,10 @@ void triggerEnvelope() {
   if (!normalSequencing and rand(6) > 4) note = pattern[selectedPattern][currentStep] + map (storedKnob[4], 0, 127, 0, 12) + rand(2) * 12 - rand(2) * 12;
   else note = pattern[selectedPattern][currentStep] + map (storedKnob[4], 0, 127, 0, 12);
   mainFrequency = mtof(note);
-  oscillator2.setFreq(mainFrequency);
-  oscillator3.setFreq(mainFrequency / 2);
-  oscillator4.setFreq(mainFrequency + detune);
-  oscillator5.setFreq(mainFrequency - detune);
+  oscillator1.setFreq(mainFrequency);
+  oscillator2.setFreq(mainFrequency / 2);
+  oscillator3.setFreq(mainFrequency + detune);
+  oscillator4.setFreq(mainFrequency - detune);
   lowPass.setCutoffFreqAndResonance(cutoffFrequency , filterResonance);
   envelope.setReleaseTime(releaseTime);
   if (note >= 0) {
@@ -196,10 +195,7 @@ AudioOutput_t updateAudio() {
            oscillator1.next() +
            oscillator2.next() +
            oscillator3.next() +
-           oscillator4.next() +
-           oscillator5.next())) >> 9;
-  // if (isStarted or isUsbStarted or isDinStarted or isMidiNote)return out ;
-  // else return 0;
+           oscillator4.next())) >> 9;
   return out;
 }
 
@@ -240,7 +236,6 @@ void manageKnobs() {
           MIDI_DIN.sendControlChange(CC_KNOB6, actualKnob[i], dinChannel);
           break;
       }
-      
       storedKnob[i] = actualKnob[i];
       selectedKnob = i + 1;
     }
@@ -330,7 +325,7 @@ void DinHandleStop() {
   currentStep = 0;
   isDinStarted = LOW;
   digitalWrite (PIN_LED3, HIGH);
-  SerialUSB.println("DIN MIDI Stop");
+  SerialUSB.println("DIN --> USB MIDI Stop");
 }
 
 void DinHandleClock() {
