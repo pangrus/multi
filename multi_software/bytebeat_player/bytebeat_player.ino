@@ -46,7 +46,7 @@ void loop () {
 }
 
 void GenerateAudioStream() {
-  // here's the bytebeat expresssion
+  // here's the bytebeat expression
   out = t * (parameter1 + (1 ^ t >> parameter2 & parameter3)) * (5 + (parameter4 & t >> parameter5)) >> (t >> 8 & parameter6);
   analogWrite (DAC_PIN, (byte)out);
   t++;
