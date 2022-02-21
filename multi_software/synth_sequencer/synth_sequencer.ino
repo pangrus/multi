@@ -330,7 +330,7 @@ void DinHandleStop() {
   currentStep = 0;
   isDinStarted = LOW;
   digitalWrite (PIN_LED3, HIGH);
-  SerialUSB.println("DIN --> USB MIDI Stop");
+  SerialUSB.println("DIN MIDI Stop");
 }
 
 void DinHandleClock() {
