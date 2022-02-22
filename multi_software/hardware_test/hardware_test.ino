@@ -21,6 +21,7 @@
 byte actualKnob[] = {0, 0, 0, 0, 0, 0, 0};
 byte storedKnob[] = {0, 0, 0, 0, 0, 0, 0};
 byte knobThreshold = 5;
+byte selectedKnob;
 
 // pushbutton variables
 byte pb1Pin = 9;
@@ -29,17 +30,16 @@ bool readPb1;
 bool readPb2;
 bool pb1State;
 bool pb2State;
-bool pb1Mode = HIGH;
-bool pb2Mode = HIGH;
-bool lastPb1State = LOW;
-bool lastPb2State = LOW;
+bool pb1Mode;
+bool pb2Mode;
+bool lastPb1State;
+bool lastPb2State;
 long lastDebounceTime = 0;
 long debounceDelay = 50;
 
 // blink variables
 bool ledState;
 byte blinks;
-byte selectedKnob;
 unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
 unsigned long blinkTime = 200;
@@ -73,7 +73,7 @@ void managePushbuttons() {
         pb1Mode = !pb1Mode;
         if (pb1Mode) Serial.println ("PB1 MODE OFF");
         else Serial.println ("PB1 MODE ON");
-        digitalWrite (PIN_LED3, pb1Mode);
+        digitalWrite (PIN_LED3, !pb1Mode);
       }
     }
   }
@@ -90,7 +90,7 @@ void managePushbuttons() {
         pb2Mode = !pb2Mode;
         if (pb2Mode) Serial.println ("PB2 MODE OFF");
         else Serial.println ("PB2 MODE ON");
-        digitalWrite (PIN_LED2, pb2Mode);
+        digitalWrite (PIN_LED2, !pb2Mode);
       }
     }
   }
