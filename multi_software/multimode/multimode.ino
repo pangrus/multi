@@ -1,4 +1,4 @@
- /*
+/*
                    _ _   _
                   | | | (_)
    _ __ ___  _   _| | |_ _
@@ -6,10 +6,10 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  multimode v0.22
+  multimode v1.23
   CC BY-NC-SA pangrus 2022
   ------------------------
-  
+
   knobs 1 to 4 are used to select the mode at power up
   knobs 1 to 6 are sending MIDI CC on USB and DIN connectors
 
@@ -21,7 +21,7 @@
   knob4         selects sequence
   knob5         transpose sequence
   knob6         sequencer tempo
-  
+
   mode 2 : drone
   6 oscillators drone generator with 6 lfos
   -----------------------------------------
@@ -40,9 +40,9 @@
 
   mode 4: bytebeat player
   -----------------------
-  knobs are effecting expression parameters 
+  knobs are effecting expression parameters
   pb1 and pb2 selects different expressions
-  
+
 */
 
 #include <MozziGuts.h>
@@ -116,16 +116,16 @@ byte activeStep2 = 0;
 byte activeStep3 = 0;
 
 // pushbuttons management variables
-bool pb1Mode = LOW;
-bool pb2Mode = LOW;
+bool pb1Mode;
+bool pb2Mode;
 bool readPb1;
 bool readPb2;
 bool pb1State;
 bool pb2State;
+bool lastPb1State;
+bool lastPb2State;
 bool isStarted = LOW;
 bool normalSequencing = HIGH;
-bool lastPb1State = LOW;
-bool lastPb2State = LOW;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 30000;
 
@@ -226,12 +226,12 @@ void setup() {
   storedKnob[4] = analogRead(5);
   storedKnob[5] = analogRead(8);
   // lfo frequencies
-  lfo1.setFreq(0.013f);
-  lfo2.setFreq(0.019f);
-  lfo3.setFreq(0.029f);
-  lfo4.setFreq(0.041f);
-  lfo5.setFreq(0.053f);
-  lfo6.setFreq(0.067f);
+  lfo1.setFreq(0.0131f);
+  lfo2.setFreq(0.0181f);
+  lfo3.setFreq(0.0239f);
+  lfo4.setFreq(0.0421f);
+  lfo5.setFreq(0.0557f);
+  lfo6.setFreq(0.0673f);
   // init pattern used for pattern rotation
   for (int i = 0; i < 15; i++) {
     patternSwap[i] = '.';
@@ -460,10 +460,10 @@ void managePushbuttons() {
 void usbStart() {
   if (modeSelect == 1) {
     ppq24 = 0;
+    clockCounter = 0;
     currentStep = 0;
     activeStep1 = activeStep2 = activeStep3 = 0;
     isUsbStarted = HIGH;
-    digitalWrite (PIN_LED3, LOW);
     SerialUSB.println("USB MIDI Start");
   }
 }
@@ -471,21 +471,22 @@ void usbStart() {
 void usbStop() {
   if (modeSelect == 1) {
     ppq24 = 0;
+    clockCounter == 0;
     currentStep = 0;
     activeStep1 = activeStep2 = activeStep3 = 0;
     isUsbStarted = LOW;
-    digitalWrite (PIN_LED3, HIGH);
     SerialUSB.println("USB MIDI Stop");
+    digitalWrite (PIN_LED3, HIGH);
   }
 }
 
 void dinStart() {
   if (modeSelect == 1 or modeSelect == 3) {
     ppq24 = 0;
+    clockCounter = 0;
     currentStep = 0;
     activeStep1 = activeStep2 = activeStep3 = 0;
     isDinStarted = HIGH;
-    digitalWrite (PIN_LED3, LOW);
     SerialUSB.println("DIN MIDI Start");
   }
 }
@@ -493,11 +494,12 @@ void dinStart() {
 void dinStop() {
   if (modeSelect == 1 or modeSelect == 3) {
     ppq24 = 0;
+    clockCounter = 0;
     currentStep = 0;
     activeStep1 = activeStep2 = activeStep3 = 0;
     isDinStarted = LOW;
-    digitalWrite (PIN_LED3, HIGH);
     SerialUSB.println("DIN MIDI Stop");
+    digitalWrite (LED_BUILTIN, HIGH);
   }
 }
 
@@ -505,6 +507,7 @@ void dinClock() {
   if (isDinStarted and modeSelect == 1) {
     if (ppq24 == 0) playSynthNote();
     if (ppq24++ > 4) ppq24 = 0;
+    digitalWrite (LED_BUILTIN, ppq24);
   }
   if (isDinStarted and modeSelect == 3) {
     if (clockCounter == 0) {
@@ -530,6 +533,7 @@ void usbClock() {
   if (isUsbStarted) {
     if (ppq24 == 0) playSynthNote();
     if (ppq24++ > 4) ppq24 = 0;
+    digitalWrite (LED_BUILTIN, ppq24);
   }
 }
 
@@ -608,14 +612,14 @@ AudioOutput_t updateAudio() {
       return droneOut;
       break;
     case 4:
-        bytebeatOut = t * (parameter1 + (1 ^ t >> parameter2 & parameter3)) * (5 + (parameter4 & t >> parameter5)) >> (t >> 8 & parameter6);
-        if (pb2Mode) bytebeatOut = t * (parameter6 + (1 ^ t >> parameter5 & parameter4)) * (5 + (parameter3 & t >> parameter2)) >> (t >> 8 & parameter1);
-        if (pb1Mode & pb2Mode) bytebeatOut = (t * (parameter1 + (1 ^ t >> parameter2 & parameter3)) * (5 + (parameter4 & t >> parameter5)) >> (t >> 8 & parameter6)) ^ (t * (parameter6 + (1 ^ t >> parameter5 & parameter4)) * (5 + (parameter3 & t >> parameter2)) >> (t >> 8 & parameter1));
-        if (!pb2Mode & !pb1Mode) {
-          t = 0;
-          bytebeatOut = 0;
-        }
-        t++;
+      bytebeatOut = t * (parameter1 + (1 ^ t >> parameter2 & parameter3)) * (5 + (parameter4 & t >> parameter5)) >> (t >> 8 & parameter6);
+      if (pb2Mode) bytebeatOut = t * (parameter6 + (1 ^ t >> parameter5 & parameter4)) * (5 + (parameter3 & t >> parameter2)) >> (t >> 8 & parameter1);
+      if (pb1Mode & pb2Mode) bytebeatOut = (t * (parameter1 + (1 ^ t >> parameter2 & parameter3)) * (5 + (parameter4 & t >> parameter5)) >> (t >> 8 & parameter6)) ^ (t * (parameter6 + (1 ^ t >> parameter5 & parameter4)) * (5 + (parameter3 & t >> parameter2)) >> (t >> 8 & parameter1));
+      if (!pb2Mode & !pb1Mode) {
+        t = 0;
+        bytebeatOut = 0;
+      }
+      t++;
       return bytebeatOut >> 2;
       break;
   }
