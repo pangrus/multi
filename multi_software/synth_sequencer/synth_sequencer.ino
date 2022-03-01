@@ -6,7 +6,7 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  synth_sequencer V0.22
+  synth_sequencer V0.23
   ---------------------
 
   knob1 synth release
@@ -41,8 +41,8 @@ bool isUsbStarted = LOW;
 bool isDinStarted = LOW;
 bool isMidiNote = LOW;
 byte ppq24;
-byte usbChannel = 2;
-byte dinChannel = 3;
+byte usbChannel = 1;
+byte dinChannel = 1;
 
 // assign MIDI CC to knobs
 #define CC_KNOB1 73     // attack
@@ -336,11 +336,13 @@ void DinHandleClock() {
 }
 
 void UsbHandleNoteOn(byte channel, byte note, byte velocity) {
+  lowPass.setCutoffFreqAndResonance(cutoffFrequency , filterResonance);
+  envelope.setReleaseTime(releaseTime);
   mainFrequency = mtof(note);
-  oscillator2.setFreq(mainFrequency);
-  oscillator3.setFreq(mainFrequency / 2);
-  oscillator4.setFreq(mainFrequency + detune);
-  oscillator5.setFreq(mainFrequency - detune);
+  oscillator1.setFreq(mainFrequency);
+  oscillator2.setFreq(mainFrequency / 2);
+  oscillator3.setFreq(mainFrequency + detune);
+  oscillator4.setFreq(mainFrequency - detune);
   if (velocity > 0) envelope.noteOn();
   else envelope.noteOff();
 }
