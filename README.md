@@ -11,11 +11,11 @@ There are other boards pin compatible with the XIAO, like the [Adafruit QT Py - 
 The strong point is that you can program your **multi** as you need, using the Arduino IDE. 
 On the MIDI side, possible use includes advanced midi controlling, filtering and remapping as well as algorhitmic arpeggiators and aleatoric patch generators. It's also perfect to explore digital synthesis techniques. 
  
-**Software**   
-Up to now, the available software is:
-
+**Software**    
+ There are already several usable software and the list is constantly expanding:    
+       
 - **drone** it's a six oscillators drone machine.   
-- **synth_sequencer** three oscillator monophonic synth with embedded sequencer. It receives MIDI clock and note messages.
+- **synth_sequencer** three oscillators monophonic synth with embedded sequencer. It receives MIDI clock and note messages.
 - **bytebeat player** allows to play algorithmic music with no instruments and no real oscillators but a math expression that creates an audio output waveform as a function of time, processed 8000 times per second. The expression has six parameters accessible through the **multi** knobs.   
 - **midi converter** is a USB to 5 DIN bi-directional MIDI converter.   
 - **midi metronome** takes the MIDI clock from the 5 DIN midi connector and generates a metronome click on the audio output, to allow acoustic musicians to synchronize their performance to an electronic setup.   
