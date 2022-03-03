@@ -4,7 +4,7 @@
 
 **What is multi?**  
 **multi** is an open hardware circuit board hosting a powerful [Seeeduino XIAO](https://wiki.seeedstudio.com/Seeeduino-XIAO/), 6 pots, 2 pushbuttons, 2 Midi DIN connectors and an audio output.   
-The Seeeduino XIAO board carries the powerful ATSAMD21G18A-MU which is a low-power microcontroller and has 14 GPIO PINs, a DAC output and one UART interface. To avoid grounding loops the MIDI input is properly opto-isolated, as required by official specifications.
+The Seeeduino XIAO board carries the powerful ATSAMD21G18A-MU which is a low-power microcontroller and has 14 GPIO PINs, a DAC output and one UART interface. To avoid grounding loops the MIDI input is properly opto-isolated, as required by official specifications.    
 There are other boards pin compatible with the XIAO, like the [Adafruit QT Py - SAMD21](https://www.adafruit.com/product/4600) and the [Adafruit QT Py ESP32-S2 WiFi](https://www.adafruit.com/product/5325).
 
 **Bend multi to your needs**  
@@ -24,7 +24,7 @@ Up to now, the available software is:
 
  **Sound generation**    
 Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
+And if you ever wanted some ’80s-era distopia movie (background) music for your daily life, Tod Kurt has a [repository](https://github.com/todbot/mozzi_experiments) with some interesting sketches ready to run on the SAMD21.
 
-[Tod Kurt](https://github.com/todbot/mozzi_experiments)
 
 
