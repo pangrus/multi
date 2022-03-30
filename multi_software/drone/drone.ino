@@ -10,11 +10,9 @@
   CC BY-NC-SA pangrus 2022
   ------------------------
 
-  knobs 1 to 6 are sending MIDI CC on USB and DIN connectors
-
   6 oscillators drone generator with 6 lfos
   -----------------------------------------
-  knobs 1 to 6  controls the oscillator frequency and midi controller
+  knobs 1 to 6  controls the oscillator frequency and midi controller, sends MIDI CC on USB and DIN connectors
   pb1 switches  drone on/off
   pb2 switches  lfos on/off
 
@@ -25,10 +23,16 @@
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
 #include <MIDI.h>
-#include <Adafruit_TinyUSB.h>
+#include <Adafruit_TinyUSB.h>   //tested with version 0.10.5
 
 // wavetables
 #include <tables/triangle2048_int8.h>
+#include <tables/sin2048_int8.h>
+
+// oscillators
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator[6];
+// lfos
+Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> lfo[6];
 
 // MIDI
 Adafruit_USBD_MIDI usb_midi;
@@ -74,11 +78,6 @@ int freq[6];
 float lfoFreq[6];
 long droneOut;
 
-// oscillators
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator[6];
-// lfos
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo[6];
-
 void setup() {
   startMozzi();
   analogReadResolution (7);
@@ -99,9 +98,9 @@ void setup() {
   storedKnob[5] = analogRead(8);
   for ( int i = 0; i < 6; i++) {
     oscillator[i].setTable(TRIANGLE2048_DATA);
-    lfo[i].setTable(TRIANGLE2048_DATA);
+    lfo[i].setTable(SIN2048_DATA);
   }
-  // lfo frequencies
+  // lfo frequencies are prime numbers
   lfo[0].setFreq(0.0131f);
   lfo[1].setFreq(0.0181f);
   lfo[2].setFreq(0.0239f);
