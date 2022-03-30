@@ -6,7 +6,7 @@
   | | | | | | |_| | | |_| |
   |_| |_| |_|\__,_|_|\__|_|
 
-  drone v0.22
+  drone v1.0
   CC BY-NC-SA pangrus 2022
   ------------------------
 
@@ -30,7 +30,6 @@
 // wavetables
 #include <tables/triangle2048_int8.h>
 
-
 // MIDI
 Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI_USB);
@@ -38,7 +37,7 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI_DIN);
 
 // MIDI variables
 byte usbChannel = 1;
-byte dinChannel = 10;
+byte dinChannel = 2;
 
 // assign MIDI CC to knobs
 #define CC_KNOB1 73     // attack
@@ -70,26 +69,15 @@ unsigned long debounceDelay = 30000;
 
 // drone variables
 byte midiNote[6];
-byte amplitude1, amplitude2, amplitude3, amplitude4, amplitude5, amplitude6;
+byte level[6];
 int freq[6];
-float lfoFreq1, lfoFreq2, lfoFreq3, lfoFreq4, lfoFreq5, lfoFreq6;
+float lfoFreq[6];
 long droneOut;
 
-// drone oscillators
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc1(TRIANGLE2048_DATA);
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc2(TRIANGLE2048_DATA);
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc3(TRIANGLE2048_DATA);
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc4(TRIANGLE2048_DATA);
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc5(TRIANGLE2048_DATA);
-Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> droneOsc6(TRIANGLE2048_DATA);
-
-// 6 lfos
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo1(TRIANGLE2048_DATA);
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo2(TRIANGLE2048_DATA);
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo3(TRIANGLE2048_DATA);
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo4(TRIANGLE2048_DATA);
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo5(TRIANGLE2048_DATA);
-Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo6(TRIANGLE2048_DATA);
+// oscillators
+Oscil <TRIANGLE2048_NUM_CELLS, AUDIO_RATE> oscillator[6];
+// lfos
+Oscil<TRIANGLE2048_NUM_CELLS, CONTROL_RATE> lfo[6];
 
 void setup() {
   startMozzi();
@@ -109,13 +97,17 @@ void setup() {
   storedKnob[3] = analogRead(4);
   storedKnob[4] = analogRead(5);
   storedKnob[5] = analogRead(8);
+  for ( int i = 0; i < 6; i++) {
+    oscillator[i].setTable(TRIANGLE2048_DATA);
+    lfo[i].setTable(TRIANGLE2048_DATA);
+  }
   // lfo frequencies
-  lfo1.setFreq(0.0131f);
-  lfo2.setFreq(0.0181f);
-  lfo3.setFreq(0.0239f);
-  lfo4.setFreq(0.0421f);
-  lfo5.setFreq(0.0557f);
-  lfo6.setFreq(0.0673f);
+  lfo[0].setFreq(0.0131f);
+  lfo[1].setFreq(0.0181f);
+  lfo[2].setFreq(0.0239f);
+  lfo[3].setFreq(0.0421f);
+  lfo[4].setFreq(0.0557f);
+  lfo[5].setFreq(0.0673f);
 }
 
 void loop() {
@@ -130,29 +122,14 @@ void updateControl() {
   drone();
 }
 
-// drone
 void drone() {
-  if (pb2Mode) {
-    amplitude1 = map (lfo1.next(), -127, 127, 10, 240);
-    amplitude2 = map (lfo2.next(), -127, 127, 10, 240);
-    amplitude3 = map (lfo3.next(), -127, 127, 10, 240);
-    amplitude4 = map (lfo4.next(), -127, 127, 10, 240);
-    amplitude5 = map (lfo5.next(), -127, 127, 10, 240);
-    amplitude6 = map (lfo6.next(), -127, 127, 10, 240);
-  }
-  else {
-    amplitude1 = amplitude2 = amplitude3 = amplitude4 = amplitude5 = amplitude6 = 200;
-  }
-  for (int i = 0; i < 6; i++) {
+  for ( int i = 0; i < 6; i++) {
+    if (pb2Mode) level[i] = map (lfo[i].next(), -127, 127, 10, 240);
+    else level[i] = 200;
     midiNote[i] = map (storedKnob[i], 0, 120, 36, 72);
     freq[i] = mtof(midiNote[i]);
+    oscillator[i].setFreq(freq[i]);
   }
-  droneOsc1.setFreq(freq[0]);
-  droneOsc2.setFreq(freq[1]);
-  droneOsc3.setFreq(freq[2]);
-  droneOsc4.setFreq(freq[3]);
-  droneOsc5.setFreq(freq[4]);
-  droneOsc6.setFreq(freq[5]);
 }
 
 void manageKnobs() {
@@ -236,16 +213,13 @@ void managePushbuttons() {
 
 AudioOutput_t updateAudio() {
   if (pb1Mode) {
-    droneOut = (
-                 droneOsc1.next() * amplitude1 +
-                 droneOsc2.next() * amplitude2 +
-                 droneOsc3.next() * amplitude3 +
-                 droneOsc4.next() * amplitude4 +
-                 droneOsc5.next() * amplitude5 +
-                 droneOsc6.next() * amplitude6 ) >> 9;
+    for ( int i = 0; i < 6; i++) {
+      droneOut += oscillator[i].next() * level[i];
+    }
   }
   else {
     droneOut = 0;
   }
+  droneOut = droneOut >> 9;
   return droneOut;
 }
