@@ -22,6 +22,13 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 - **hardware test** if you have choosen the DIY kit you may want to use this software to test your build.   
 - **blink** the ubiquitous blink sketch.   
 
+To compile and upload the software on the Seeduino Xiao, you'll need:
+- Arduino IDE version 1.18.13
+- [Mozzi library](https://github.com/sensorium/Mozzi)
+- [Adafruit TinyUSB Library for Arduino](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) version 0.10.5
+
+You can follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
+
  **Sound generation**    
 Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
 And if you ever wanted some ’80s-era distopia movie (background) music for your daily life, Tod Kurt has a [repository](https://github.com/todbot/mozzi_experiments) with some interesting sketches ready to run on the SAMD21.
