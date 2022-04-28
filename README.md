@@ -23,9 +23,9 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 - **blink** the ubiquitous blink sketch.   
 
 To compile and upload the software on the Seeduino Xiao, you'll need:
-- Arduino IDE version 1.18.13
+- [Arduino IDE](https://www.arduino.cc/en/software)
 - [Mozzi library](https://github.com/sensorium/Mozzi)
-- [Adafruit TinyUSB Library for Arduino](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) version 0.10.5
+- [Adafruit TinyUSB Library for Arduino](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) version 0.10.5 (downgrade it using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager))
 
 You can follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
 
