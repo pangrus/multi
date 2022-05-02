@@ -8,7 +8,7 @@
 
   cc scrambler - preset fucker v0.2
   ---------------------------------
-  PB1           scrambles MIDI CC from 0 to 119
+  PB1           scrambles MIDI CC from 1 to 119
   PB2 + KNOB6   change the MIDI channel
 
   orange led blinks accordingly to the selected MIDI channel
