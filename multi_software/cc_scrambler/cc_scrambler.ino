@@ -247,7 +247,7 @@ void manageBlinks() {
 }
 
 void presetFucker() {
-  for (int i = 0; i < 120; i++) {
+  for (int i = 1; i < 120; i++) {
     controlChangeValue[i] = random(128);
     MIDI_USB.sendControlChange(i, controlChangeValue[i], midiChannel);
     MIDI_DIN.sendControlChange(i, controlChangeValue[i], midiChannel);
