@@ -20,8 +20,8 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 - **midi converter** is a USB to 5 DIN bi-directional MIDI converter.   
 - **midi metronome** takes the MIDI clock from the 5 DIN midi connector and generates a metronome click on the audio output, to allow acoustic musicians to synchronize their performance to an electronic setup.   
 - **hardware test** if you have choosen the DIY kit you may want to use this software to test your build.   
-- **cc scrambler** generate random synthesizer patch by spitting out random MIDI CC values (preset fucker)
-- **fourier** a drone generator with 18 oscillators and 18 lfos
+- **cc scrambler** generates random synthesizer patch by spitting out random MIDI CC values (preset fucker).
+- **fourier** a drone generator with 18 oscillators and 18 lfos.
 - **blink** the ubiquitous blink sketch.   
 
 To compile and upload the software on the Seeduino Xiao, you'll need:
