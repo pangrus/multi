@@ -5,7 +5,6 @@
 **What is multi?**  
 **multi** is an open hardware circuit board hosting a [Seeeduino XIAO](https://wiki.seeedstudio.com/Seeeduino-XIAO/), 6 pots, 2 pushbuttons, 2 Midi DIN connectors and an audio output.   
 The Seeeduino XIAO board carries the powerful ATSAMD21G18A-MU which is a low-power microcontroller and has 14 GPIO PINs, a DAC output and one UART interface. To avoid grounding loops the MIDI input is properly opto-isolated, as required by official specifications.    
-There are other boards pin compatible with the XIAO, like the [Adafruit QT Py - SAMD21](https://www.adafruit.com/product/4600) and the [Adafruit QT Py ESP32-S2 WiFi](https://www.adafruit.com/product/5325).
 
 **Bend multi to your needs**  
 The strong point is that you can program your **multi** as you need, using the Arduino IDE. 
