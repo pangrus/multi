@@ -13,13 +13,13 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 **Software**    
  There are already several usable software and the list is constantly expanding:    
 
-- **synth_sequencer** three oscillators monophonic synth with embedded sequencer. It receives MIDI clock and note messages.
+- **synth sequencer** three oscillators monophonic synth with embedded sequencer. It receives MIDI clock and note messages.
 - **drone** it's a six oscillators drone machine.   
 - **euclidean sequencer** receives midi clock, start/stop on the MIDI DIN input, generates euclidean rhythmes on the MIDI DIN output
 - **bytebeat player** allows to play algorithmic music with no instruments and no real oscillators but a math expression that creates an audio output waveform as a function of time, processed 8000 times per second. The expression has six parameters accessible through the **multi** knobs.   
 - **fourier** 3 voices drone generator, each voice is composed by six oscillators tuned on the harmonic overtones, each voice has six lfos
 - **cc scrambler** generates random synthesizer patch by spitting out random MIDI CC values (preset fucker).
-- **multimode** keep pressed PB1 and PB2 to choose the mode between: synth_sequencer, drone, euclidean sequencer, bytebeat player, fourier and cc scrambler 
+- **multimode** keep pressed PB1 and PB2 to choose the mode between: synth sequencer, drone, euclidean sequencer, bytebeat player, fourier and cc scrambler 
 - **midi converter** is a USB to 5 DIN bi-directional MIDI converter.   
 - **midi metronome** takes the MIDI clock from the 5 DIN midi connector and generates a metronome click on the audio output, to allow acoustic musicians to synchronize their performance to an electronic setup.   
 - **hardware test** if you have choosen the DIY kit you may want to use this software to test your build.   
