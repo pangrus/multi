@@ -5,13 +5,13 @@
   |  _| (_) | |_| | |  | |  __/ |
   |_|  \___/ \__,_|_|  |_|\___|_|
 
-  fourier v0.3
+  fourier v0.4
   CC BY-NC-SA pangrus 2022
   ------------------------
-  3 voice drone generator
+  3 voices drone generator
   each voice is composed by six oscillators tuned on the harmonic overtones
   each voice has six lfos, one for each oscillator level
-  
+
   KNOB1       controls the first voice main frequency
   KNOB2       controls the second voice main frequency
   KNOB3       controls the third voice main frequency
@@ -19,9 +19,9 @@
   PB2         lfo mode on/off
 
   --lfo mode off--
-  KNOB4       changes first voice timbre by affecting the overtone level
-  KNOB5       changes second voice timbre by affecting the overtone level
-  KNOB6       changes third voice timbre by affecting the overtone level
+  KNOB4       changes first voice timbre by affecting the overtones level
+  KNOB5       changes second voice timbre by affecting the overtones level
+  KNOB6       changes third voice timbre by affecting the overtones level
 
   --lfo mode on--
   KNOB4       changes the six lfos speeds of the first voice
@@ -77,8 +77,8 @@ unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 30000;
 
 // sound generation variables
-Oscil < SIN4096_NUM_CELLS, AUDIO_RATE > oscillator[3][6];
-Oscil < SIN4096_NUM_CELLS, AUDIO_RATE > lfo[3][6];
+Oscil < SIN4096_NUM_CELLS, AUDIO_RATE > fourierOsc[3][6];
+Oscil < SIN4096_NUM_CELLS, CONTROL_RATE > fourierLfo[3][6];
 byte level[3][6];
 int fourierFreq[3];
 long fourierOut;
@@ -104,8 +104,8 @@ void setup() {
   storedKnob[5] = analogRead(8);
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 6; i++) {
-      oscillator[j][i].setTable(SIN4096_DATA);
-      lfo[j][i].setTable(SIN4096_DATA);
+      fourierOsc[j][i].setTable(SIN4096_DATA);
+      fourierLfo[j][i].setTable(SIN4096_DATA);
     }
   }
 }
@@ -134,18 +134,18 @@ void fourier() {
     }
     else {
       for (int i = 1; i < 6; i++) {
-        lfo[j][i].setFreq((float)storedKnob[j + 3] * (j + 1) / i);
-        level[j][i] = map(lfo[j][i].next(), -127, 127, 3, 247);
+        fourierLfo[j][i].setFreq((float)storedKnob[j + 3] * (j + 1) / (i * 200));
+        level[j][i] = map(fourierLfo[j][i].next(), -127, 127, 3, 247);
       }
     }
     // choose starting chord
     // mtof converts the midi note number to the corresponding frequency
-    fourierFreq[0] = mtof((storedKnob[0] >> 2) + 39);   
+    fourierFreq[0] = mtof((storedKnob[0] >> 2) + 39);
     fourierFreq[1] = mtof((storedKnob[1] >> 2) + 44);
     fourierFreq[2] = mtof((storedKnob[2] >> 2) + 56);
-    oscillator[j][0].setFreq(fourierFreq[j]);
+    fourierOsc[j][0].setFreq(fourierFreq[j]);
     for (int i = 1; i < 6; i++) {
-      oscillator[j][i].setFreq(fourierFreq[j] * (i + 1));
+      fourierOsc[j][i].setFreq(fourierFreq[j] * (i + 1));
     }
   }
 }
@@ -233,7 +233,7 @@ AudioOutput_t updateAudio() {
   if (pb1Mode) {
     for (int j = 0; j < 3; j++) {
       for (int i = 0; i < 6; i++) {
-        fourierOut += oscillator[j][i].next() * level[j][i];
+        fourierOut += fourierOsc[j][i].next() * level[j][i];
       }
     }
   }
