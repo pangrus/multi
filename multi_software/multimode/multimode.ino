@@ -1,18 +1,23 @@
 /*
-                   _ _   _
-                  | | | (_)
-   _ __ ___  _   _| | |_ _
-  | '_ ` _ \| | | | | __| |
-  | | | | | | |_| | | |_| |
-  |_| |_| |_|\__,_|_|\__|_|
+                   _ _   _                     _
+   _ __ ___  _   _| | |_(_)_ __ ___   ___   __| | ___
+  | '_ ` _ \| | | | | __| | '_ ` _ \ / _ \ / _` |/ _ \
+  | | | | | | |_| | | |_| | | | | | | (_) | (_| |  __/
+  |_| |_| |_|\__,_|_|\__|_|_| |_| |_|\___/ \__,_|\___|
 
-  multimode v1.23
+  multimode v2.0
   CC BY-NC-SA pangrus 2022
   ------------------------
 
-  knobs 1 to 4 are used to select the mode at power up
+  knobs 1 to 6 are used to select the mode at power up
   knobs 1 to 6 are sending MIDI CC on USB and DIN connectors
 
+  select mode:
+  ------------
+  set all the knobs fully CCW
+  select mode by setting only one knob fully CW (KNOB1 -> mode 1...)
+  keep pressed PB1 and PB2 for 4 seconds
+  
   mode 1 : synth sequencer
   ------------------------
   knob1         synth release
@@ -43,6 +48,33 @@
   knobs are effecting expression parameters
   pb1 and pb2 selects different expressions
 
+  mode 5: fourier (3 voices drone generator)
+  ------------------------------------------
+  each voice is composed by six oscillators tuned on the harmonic overtones
+  each voice has six lfos, one for each oscillator level
+
+  KNOB1       controls the first voice main frequency
+  KNOB2       controls the second voice main frequency
+  KNOB3       controls the third voice main frequency
+  PB1         drone on/off
+  PB2         lfo mode on/off
+
+  --lfo mode off--
+  KNOB4       changes first voice timbre by affecting the overtones level
+  KNOB5       changes second voice timbre by affecting the overtones level
+  KNOB6       changes third voice timbre by affecting the overtones level
+
+  --lfo mode on--
+  KNOB4       changes the six lfos speeds of the first voice
+  KNOB5       changes the six lfos speeds of the second voice
+  KNOB6       changes the six lfos speeds of the third voice
+
+  mode 6: cc scrambler
+  ------------------------------------------
+  PB1           scrambles MIDI CC from 0 to 119
+  PB2 + KNOB6   change the MIDI channel (from 1 to 10)
+  orange led blinks accordingly to the selected MIDI channel
+  KNOB1 to KNOB6 sends the assigned MIDI CC
 */
 
 #include <MozziGuts.h>
@@ -58,9 +90,10 @@
 // wavetables
 #include <tables/triangle2048_int8.h>
 #include <tables/square_analogue512_int8.h>
+#include <tables/sin4096_int8.h>
 
 // mode
-byte modeSelect = 1;  //synth mode is default
+byte modeSelect = 1;  //synth mode is the default mode
 
 // MIDI
 Adafruit_USBD_MIDI usb_midi;
@@ -155,6 +188,31 @@ long t = 0;
 long bytebeatOut = 0;
 bool even;
 
+// fourier variables
+byte level[3][6];
+int fourierFreq[3];
+long fourierOut;
+
+// cc scrambler variables
+bool ledState;
+byte blinks;
+unsigned long currentMillis = 0;
+unsigned long previousMillis = 0;
+unsigned long blinkTime = 200;
+byte midiChannel = 1;
+byte controlChangeValue[127];
+
+// reset
+const int RESET_TIME  = 3000000;
+int lastState = LOW;
+int resetState;
+unsigned long pressedTime  = 0;
+unsigned long releasedTime = 0;
+bool isPressing = LOW;
+bool isLongDetected = LOW;
+long pressDuration;
+
+
 // patterns are made by midi notes (-1 for pause)
 const int pattern[8][16] = {
   {36, 39, 41, 39, 46, 44, 46, 48, 36, 39, 41, 39, 46, 44, 46, 48},   // On The Run
@@ -190,6 +248,10 @@ Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator3(SQUARE_ANALOGUE512_D
 Oscil<SQUARE_ANALOGUE512_NUM_CELLS, AUDIO_RATE> oscillator4(SQUARE_ANALOGUE512_DATA);
 ADSR <CONTROL_RATE, AUDIO_RATE> envelope;
 LowPassFilter lowPass;
+
+// fourier oscillators and lfos
+Oscil < SIN4096_NUM_CELLS, AUDIO_RATE > fourierOsc[3][6];
+Oscil < SIN4096_NUM_CELLS, CONTROL_RATE > fourierLfo[3][6];
 
 Metronome seqMetro(120);
 
@@ -236,11 +298,19 @@ void setup() {
   for (int i = 0; i < 15; i++) {
     patternSwap[i] = '.';
   }
-  // select mode
-  if (analogRead(1) > 100) modeSelect = 1;
-  if (analogRead(2) > 100) modeSelect = 2;
-  if (analogRead(3) > 100) modeSelect = 3;
-  if (analogRead(4) > 100) modeSelect = 4;
+  for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < 6; i++) {
+      fourierOsc[j][i].setTable(SIN4096_DATA);
+      fourierLfo[j][i].setTable(SIN4096_DATA);
+    }
+  }
+  // mode selection
+  if (analogRead(1) > 110) modeSelect = 1;
+  if (analogRead(2) > 110) modeSelect = 2;
+  if (analogRead(3) > 110) modeSelect = 3;
+  if (analogRead(4) > 110) modeSelect = 4;
+  if (analogRead(5) > 110) modeSelect = 5;
+  if (analogRead(8) > 110) modeSelect = 6;
 }
 
 void loop() {
@@ -264,6 +334,14 @@ void updateControl() {
       break;
     case 4:
       bytebeat();
+      break;
+    case 5:
+      fourier();
+      break;
+    case 6:
+      manageBlinks();
+      if (pb1Mode) presetFucker();
+      if (pb2Mode) midiChannel = map(storedKnob[5], 0, 120, 1, 10);
       break;
   }
 }
@@ -362,6 +440,65 @@ void bytebeat() {
   parameter6 = storedKnob[5] >> 3;
 }
 
+// fourier
+void fourier() {
+  for (int j = 0; j < 3; j++) {
+    if (!pb2Mode) {
+      level[j][0] = storedKnob[j + 3] << 1;
+      level[j][1] = storedKnob[j + 3] << 1;
+      level[j][2] = 127 - storedKnob[j + 3] << 1;
+      level[j][3] = storedKnob[j + 3] << 1;
+      level[j][4] = 127 - storedKnob[j + 3] << 1;
+      level[j][5] = storedKnob[j + 3] << 1;
+    }
+    else {
+      for (int i = 1; i < 6; i++) {
+        fourierLfo[j][i].setFreq((float)storedKnob[j + 3] * (j + 1) / (i * 200));
+        level[j][i] = map(fourierLfo[j][i].next(), -127, 127, 3, 247);
+      }
+    }
+    // choose starting chord
+    // mtof converts the midi note number to the corresponding frequency
+    fourierFreq[0] = mtof((storedKnob[0] >> 2) + 39);
+    fourierFreq[1] = mtof((storedKnob[1] >> 2) + 44);
+    fourierFreq[2] = mtof((storedKnob[2] >> 2) + 56);
+    fourierOsc[j][0].setFreq(fourierFreq[j]);
+    for (int i = 1; i < 6; i++) {
+      fourierOsc[j][i].setFreq(fourierFreq[j] * (i + 1));
+    }
+  }
+}
+
+void manageBlinks() {
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= blinkTime) {
+    previousMillis = currentMillis;
+    if (ledState == LOW) ledState = HIGH;
+    else {
+      ledState = LOW;
+      blinks++;
+      if (blinks > midiChannel) {
+        blinks = 0;
+        ledState = HIGH;
+      }
+    }
+    digitalWrite(LED_BUILTIN, ledState);
+  }
+}
+
+void presetFucker() {
+  for (int i = 0; i < 120; i++) {
+    controlChangeValue[i] = random(128);
+    MIDI_USB.sendControlChange(i, controlChangeValue[i], midiChannel);
+    MIDI_DIN.sendControlChange(i, controlChangeValue[i], midiChannel);
+    delay (5);
+  }
+  SerialUSB.print("Scrambled CC on MIDI channel: ");
+  SerialUSB.println(midiChannel);
+  pb1Mode = 0;
+  digitalWrite (PIN_LED3, !pb1Mode);
+}
+
 void manageKnobs() {
   actualKnob[0] = analogRead(1);
   actualKnob[1] = analogRead(2);
@@ -420,17 +557,19 @@ void managePushbuttons() {
       if (pb1State == LOW) {
         isStarted = !isStarted;
         pb1Mode = !pb1Mode;
-        if (isStarted) {
-          currentStep = 0;
-          ppq24 = 0;
-          seqMetro.start();
-          Serial.println ("Start");
-        }
-        else {
-          envelope.noteOff();
-          seqMetro.stop();
-          currentStep = 0;
-          Serial.println ("Stop");
+        if (modeSelect != 6) {
+          if (isStarted) {
+            currentStep = 0;
+            ppq24 = 0;
+            seqMetro.start();
+            Serial.println ("Start");
+          }
+          else {
+            envelope.noteOff();
+            seqMetro.stop();
+            currentStep = 0;
+            Serial.println ("Stop");
+          }
         }
         digitalWrite (PIN_LED3, !pb1Mode);
       }
@@ -454,6 +593,45 @@ void managePushbuttons() {
     }
   }
   lastPb2State = readPb2;
+
+  // select mode by keeping pressed PB1 and PB2
+  if (!readPb1 and !readPb2) resetState = HIGH;
+  else resetState = LOW;
+  if ( lastState == LOW && resetState == HIGH ) {
+    pressedTime = mozziMicros();
+    isPressing = HIGH;
+    isLongDetected = LOW;
+  } else if (lastState == HIGH && resetState == LOW) {
+    isPressing = LOW;
+  }
+  if ( isPressing == HIGH && isLongDetected == LOW) {
+    pressDuration = mozziMicros() - pressedTime;
+    if ( pressDuration > RESET_TIME ) {
+      Serial.println("Reset");
+      if (analogRead(1) > 110) modeSelect = 1;
+      if (analogRead(2) > 110) modeSelect = 2;
+      if (analogRead(3) > 110) modeSelect = 3;
+      if (analogRead(4) > 110) modeSelect = 4;
+      if (analogRead(5) > 110) modeSelect = 5;
+      if (analogRead(8) > 110) modeSelect = 6;
+      pb1Mode = LOW;
+      pb2Mode = LOW;
+      lastPb1State = LOW;
+      lastPb2State = LOW;
+      isLongDetected = HIGH;
+      digitalWrite (PIN_LED2, HIGH);
+      digitalWrite (PIN_LED3, HIGH);
+      isUsbStarted = LOW;
+      isDinStarted = LOW;
+      isMidiNote = LOW;
+      ppq24 = 0;
+      usbChannel = 1;
+      dinChannel = 10;
+      normalSequencing = HIGH;
+      isStarted = LOW;
+    }
+  }
+  lastState = resetState;
 }
 
 // MIDI
@@ -589,11 +767,12 @@ void rotatePattern(byte patternNumber, byte rotateAmount) {
 AudioOutput_t updateAudio() {
   switch (modeSelect) {
     case 1:
-      synthOut = (envelope.next() * lowPass.next(
-                    oscillator1.next() +
-                    oscillator2.next() +
-                    oscillator3.next() +
-                    oscillator4.next())) >> 9;
+      synthOut = (
+                   envelope.next() * lowPass.next(
+                     oscillator1.next() +
+                     oscillator2.next() +
+                     oscillator3.next() +
+                     oscillator4.next())) >> 9;
       return synthOut;
       break;
     case 2:
@@ -620,7 +799,22 @@ AudioOutput_t updateAudio() {
         bytebeatOut = 0;
       }
       t++;
-      return bytebeatOut >> 2;
+      bytebeatOut = bytebeatOut >> 9;
+      return bytebeatOut;
+      break;
+    case 5:
+      if (pb1Mode) {
+        for (int j = 0; j < 3; j++) {
+          for (int i = 0; i < 6; i++) {
+            fourierOut += fourierOsc[j][i].next() * level[j][i];
+          }
+        }
+      }
+      else {
+        fourierOut = 0;
+      }
+      fourierOut = fourierOut >> 10;
+      return fourierOut;
       break;
   }
 }
