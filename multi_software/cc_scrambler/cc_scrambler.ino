@@ -1,22 +1,19 @@
 /*
-                   _ _   _
-                  | | | (_)
-   _ __ ___  _   _| | |_ _
-  | '_ ` _ \| | | | | __| |
-  | | | | | | |_| | | |_| |
-  |_| |_| |_|\__,_|_|\__|_|
+                                           _     _
+    ___ ___   ___  ___ _ __ __ _ _ __ ___ | |__ | | ___ _ __
+   / __/ __| / __|/ __| '__/ _` | '_ ` _ \| '_ \| |/ _ \ '__|
+  | (_| (__  \__ \ (__| | | (_| | | | | | | |_) | |  __/ |
+   \___\___| |___/\___|_|  \__,_|_| |_| |_|_.__/|_|\___|_|
 
-  cc scrambler - preset fucker v0.2
+
+  cc scrambler - preset fucker v0.3
   ---------------------------------
-  PB1           scrambles MIDI CC from 1 to 119
-  PB2 + KNOB6   change the MIDI channel
-
+  PB1           scrambles MIDI CC from 0 to 119
+  PB2 + KNOB6   change the MIDI channel (from 1 to 10)
   orange led blinks accordingly to the selected MIDI channel
   KNOB1 to KNOB6 sends the assigned MIDI CC
 
-  ------------------------
   CC BY-NC-SA pangrus 2022
-  ------------------------
 
   list of MIDI Control Change
 
@@ -173,7 +170,7 @@ byte controlChangeValue[127];
 // active midiChannel;
 byte midiChannel = 1;
 
-// blink variables
+// ccscrambler blink variables
 bool ledState;
 byte blinks;
 unsigned long currentMillis = 0;
@@ -196,7 +193,7 @@ bool pb2State;
 bool lastPb1State;
 bool lastPb2State;
 unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 30000;
+unsigned long debounceDelay = 20000;
 
 void setup() {
   analogReadResolution (7);
@@ -226,7 +223,7 @@ void loop() {
   manageKnobs();
   manageBlinks();
   if (pb1Mode) presetFucker();
-  if (pb2Mode) midiChannel = (storedKnob[5] >> 3) + 1;
+  if (pb2Mode) midiChannel = map(storedKnob[5], 0, 120, 1, 10);
 }
 
 void manageBlinks() {
@@ -247,7 +244,7 @@ void manageBlinks() {
 }
 
 void presetFucker() {
-  for (int i = 1; i < 120; i++) {
+  for (int i = 0; i < 120; i++) {
     controlChangeValue[i] = random(128);
     MIDI_USB.sendControlChange(i, controlChangeValue[i], midiChannel);
     MIDI_DIN.sendControlChange(i, controlChangeValue[i], midiChannel);
