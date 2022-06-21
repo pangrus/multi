@@ -17,7 +17,7 @@
   set all the knobs fully CCW
   select mode by setting only one knob fully CW (KNOB1 -> mode 1...)
   keep pressed PB1 and PB2 for 4 seconds
-  
+
   mode 1 : synth sequencer
   ------------------------
   knob1         synth release
@@ -45,7 +45,7 @@
 
   mode 4: bytebeat player
   -----------------------
-  knobs are effecting expression parameters
+  knobs are affecting expression parameters
   pb1 and pb2 selects different expressions
 
   mode 5: fourier (3 voices drone generator)
@@ -765,6 +765,10 @@ void rotatePattern(byte patternNumber, byte rotateAmount) {
 }
 
 AudioOutput_t updateAudio() {
+  // no audio during reset
+  if (!digitalRead (8) and !digitalRead(9)) {
+    return 0;
+  }
   switch (modeSelect) {
     case 1:
       synthOut = (
