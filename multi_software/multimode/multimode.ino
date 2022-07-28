@@ -776,7 +776,7 @@ AudioOutput_t updateAudio() {
                      oscillator1.next() +
                      oscillator2.next() +
                      oscillator3.next() +
-                     oscillator4.next())) >> 9;
+                     oscillator4.next())) >> 10;
       return synthOut;
       break;
     case 2:
