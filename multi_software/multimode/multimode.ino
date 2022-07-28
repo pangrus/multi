@@ -5,7 +5,7 @@
   | | | | | | |_| | | |_| | | | | | | (_) | (_| |  __/
   |_| |_| |_|\__,_|_|\__|_|_| |_| |_|\___/ \__,_|\___|
 
-  multimode v2.0
+  multimode v2.1
   CC BY-NC-SA pangrus 2022
   ------------------------
 
@@ -621,6 +621,7 @@ void managePushbuttons() {
       isLongDetected = HIGH;
       digitalWrite (PIN_LED2, HIGH);
       digitalWrite (PIN_LED3, HIGH);
+      digitalWrite(LED_BUILTIN, HIGH);
       isUsbStarted = LOW;
       isDinStarted = LOW;
       isMidiNote = LOW;
