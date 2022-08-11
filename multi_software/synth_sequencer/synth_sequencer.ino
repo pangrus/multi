@@ -1,12 +1,12 @@
 /*
-                   _ _   _
-                  | | | (_)
-   _ __ ___  _   _| | |_ _
-  | '_ ` _ \| | | | | __| |
-  | | | | | | |_| | | |_| |
-  |_| |_| |_|\__,_|_|\__|_|
+                   _   _
+   ___ _   _ _ __ | |_| |__     ___  ___  __ _ _   _  ___ _ __   ___ ___ _ __
+  / __| | | | '_ \| __| '_ \   / __|/ _ \/ _` | | | |/ _ \ '_ \ / __/ _ \ '__|
+  \__ \ |_| | | | | |_| | | |  \__ \  __/ (_| | |_| |  __/ | | | (_|  __/ |
+  |___/\__, |_| |_|\__|_| |_|  |___/\___|\__, |\__,_|\___|_| |_|\___\___|_|
+        |___/                               |_|
 
-  synth_sequencer V0.23
+  synth_sequencer V1.00
   ---------------------
 
   knob1 synth release
@@ -114,6 +114,7 @@ void setup() {
   pinMode(10, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
   pinMode(PIN_LED3, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   envelope.setTimes(0, 200000, 200000, 1000);
   SerialUSB.begin(115200);
   MIDI_USB.begin(usbChannel);
@@ -149,8 +150,8 @@ void loop() {
 void updateControl() {
   managePushbuttons();
   manageKnobs();
-  cutoffFrequency = map (storedKnob[1], 0, 127, 25, 255);
-  filterResonance = storedKnob[2] << 1;
+  cutoffFrequency = map (storedKnob[1], 0, 127, 60, 255);
+  filterResonance = map (storedKnob[2], 0, 127, 0, 230);
   detune = storedKnob[2] >> 4;
   releaseTime = (storedKnob[0] * 3) + 30;
   if (!normalSequencing) {
@@ -208,7 +209,7 @@ void manageKnobs() {
   actualKnob[5] = analogRead(8);
   for (int i = 0; i < 6; i++) {
     if (abs(actualKnob[i] - storedKnob[i]) > knobThreshold) {
-      
+
       // send MIDI CC
       switch (i) {
         case 0:
@@ -345,10 +346,12 @@ void UsbHandleNoteOn(byte channel, byte note, byte velocity) {
   oscillator4.setFreq(mainFrequency - detune);
   if (velocity > 0) envelope.noteOn();
   else envelope.noteOff();
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void UsbHandleNoteOff(byte channel, byte note, byte velocity) {
   envelope.noteOff();
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void UsbHandleCC(byte channel, byte control, byte value) {
