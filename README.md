@@ -8,7 +8,7 @@ The Seeeduino XIAO board carries the powerful ATSAMD21G18A-MU which is a low-pow
 
 **Bend multi to your needs**  
 The strong point is that you can program your **multi** as you need, using the Arduino IDE. 
-On the MIDI side, possible use includes advanced midi controlling, filtering and remapping as well as algorhitmic arpeggiators and aleatoric patch generators. It's also perfect to explore digital synthesis techniques. 
+On the MIDI side, possible use includes advanced midi controlling, filtering and remapping as well as algorithmic arpeggiators and aleatoric patch generators. It's also perfect to explore digital synthesis techniques. 
  
 **Software**    
  There are already several usable software and the list is constantly expanding:    
