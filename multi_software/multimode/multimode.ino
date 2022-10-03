@@ -5,7 +5,7 @@
   | | | | | | |_| | | |_| | | | | | | (_) | (_| |  __/
   |_| |_| |_|\__,_|_|\__|_|_| |_| |_|\___/ \__,_|\___|
 
-  multimode v2.1
+  multimode v2.2
   CC BY-NC-SA pangrus 2022
   ------------------------
 
@@ -106,7 +106,7 @@ bool isDinStarted = LOW;
 bool isMidiNote = LOW;
 byte ppq24;
 byte usbChannel = 1;
-byte dinChannel = 10;
+byte dinChannel = 1;
 
 // assign MIDI CC to knobs
 #define CC_KNOB1 73     // attack
