@@ -6,7 +6,7 @@
    \___\___| |___/\___|_|  \__,_|_| |_| |_|_.__/|_|\___|_|
 
 
-  cc scrambler - preset fucker v0.3
+  cc scrambler - preset fucker v0.4
   ---------------------------------
   PB1           scrambles MIDI CC from 0 to 119
   PB2 + KNOB6   change the MIDI channel (from 1 to 10)
@@ -147,7 +147,7 @@
 */
 
 #include <MIDI.h>
-#include <Adafruit_TinyUSB.h>
+#include <Adafruit_TinyUSB.h>   // tested with version 0.10.5 
 
 // MIDI
 Adafruit_USBD_MIDI usb_midi;
