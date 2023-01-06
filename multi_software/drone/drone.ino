@@ -12,7 +12,7 @@
 
   6 oscillators drone generator with 6 lfos
   -----------------------------------------
-  knobs 1 to 6  controls the oscillator frequency and midi controller, sends MIDI CC on USB and DIN connectors
+  knobs 1 to 6  controls the oscillator frequency and sends MIDI CC on USB and DIN connectors
   pb1 switches  drone on/off
   pb2 switches  lfos on/off
 
