@@ -37,7 +37,6 @@ After installing all the required libraries, you must add the Seeeduino Xiao boa
 
  **Sound generation**    
 Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
-And if you ever wanted some ’80s-era distopia movie (background) music for your daily life, Tod Kurt has a [repository](https://github.com/todbot/mozzi_experiments) with some interesting sketches ready to run on the SAMD21.
 
 
 
