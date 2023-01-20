@@ -32,7 +32,7 @@ To compile and upload the software on the Seeduino Xiao, you'll need:
 - [Mozzi library](https://github.com/sensorium/Mozzi)
 - [Adafruit TinyUSB Library for Arduino](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) **version 0.10.5 (downgrade it using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager))**
 
-You can follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
+After installing all the required libraries, you must add the Seeeduino XIAO board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
 
  **Sound generation**    
 Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
