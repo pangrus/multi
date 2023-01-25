@@ -31,7 +31,7 @@ To compile and upload the software on the Seeduino Xiao, you'll need:
 - [Arduino IDE](https://www.arduino.cc/en/software)
 - [Midi library](https://github.com/FortySevenEffects/arduino_midi_library)
 - [Mozzi library](https://github.com/sensorium/Mozzi)
-- [Adafruit TinyUSB Library for Arduino](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) **version 0.10.5 (downgrade it using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager))**
+- Adafruit TinyUSB Library for Arduino, install **version 0.10.5** using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager)
 
 After installing all the required libraries, you must add the Seeeduino Xiao board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
 
