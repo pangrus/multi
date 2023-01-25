@@ -29,7 +29,7 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 **Compiling and uploading**  
 To compile and upload the software on the Seeduino Xiao, you'll need:
 - [Arduino IDE](https://www.arduino.cc/en/software)
-- [Midi library](https://github.com/FortySevenEffects/arduino_midi_library)
+- [MIDI library](https://github.com/FortySevenEffects/arduino_midi_library)
 - [Mozzi library](https://github.com/sensorium/Mozzi)
 - Adafruit TinyUSB Library for Arduino, install **version 0.10.5** using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager)
 
