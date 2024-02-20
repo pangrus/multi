@@ -53,7 +53,8 @@ void setup() {
   MIDI_DIN.setHandleStart(DinHandleStart);
   MIDI_DIN.setHandleStop(DinHandleStop);
   MIDI_DIN.setHandleClock(DinHandleClock);
-  MIDI_DIN.turnThruOff();
+  // Uncomment the following line if you don't need MIDI through
+  // MIDI_DIN.turnThruOff();
   analogReadResolution(4);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(PIN_LED2, OUTPUT);
@@ -70,7 +71,7 @@ void updateControl() {
 void DinHandleStart() {
   SerialUSB.println("MIDI Start");
   aBamboo1.start();
-  midiClock = 0;
+  midiClock = -1;
   isStarted = true;
   digitalWrite (LED_BUILTIN, LOW);
 }
