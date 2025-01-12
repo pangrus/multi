@@ -31,7 +31,7 @@ Since the Xiao board has a DAC, **multi** can also be used to produce sounds usi
 
 **Compiling and uploading**  
 Install the [Arduino IDE](https://www.arduino.cc/en/software), last version tested is 2.3.4.  
-Add the Seeeduino Xiao board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.  
+Add the Seeeduino Xiao board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki and install the version 1.7.8 of the _Seeed SAMD Boards_ package.  
 To compile the software, you'll need some libraries, install them from the Arduino IDE Library Manager:  
 - [Mozzi](https://github.com/sensorium/Mozzi), tested with version 2.0.1, also install library dependencies
 - [Adafruit TinyUSB Library](https://github.com/adafruit/Adafruit_TinyUSB_Arduino), tested with version 0.10.5, no dependencies needed
