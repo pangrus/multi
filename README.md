@@ -9,6 +9,9 @@ The Seeeduino XIAO board carries the powerful ATSAMD21G18A-MU which is a low-pow
 **Bend multi to your needs**  
 The strong point is that you can program your **multi** as you need, using the Arduino IDE. 
 On the MIDI side, possible use includes advanced midi controlling, filtering and remapping as well as algorithmic arpeggiators and aleatoric patch generators. It's also perfect to explore digital synthesis techniques. 
+
+**Sound generation**    
+Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
  
 **Software**    
  There are already several usable software and the list is constantly expanding:    
@@ -34,10 +37,6 @@ To compile the software, you'll need some libraries, install them from the Ardui
 - [Adafruit TinyUSB Library](https://github.com/adafruit/Adafruit_TinyUSB_Arduino), tested with version 0.10.5, no dependencies needed
 - [MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library), tested with version 5.0.2  
 
-From the Arduino IDE Tools menu, select _TinyUSB_ as USB stack.  
-
-**Sound generation**    
-Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
-
+From the Arduino IDE Tools menu, select _TinyUSB_ as USB stack.
 
 
