@@ -1,12 +1,11 @@
 /*
-                   _ _   _
-                  | | | (_)
-   _ __ ___  _   _| | |_ _
-  | '_ ` _ \| | | | | __| |
-  | | | | | | |_| | | |_| |
-  |_| |_| |_|\__,_|_|\__|_|
+ _                   _                          _            _   
+| |__   __ _ _ __ __| |_      ____ _ _ __ ___  | |_ ___  ___| |_ 
+| '_ \ / _` | '__/ _` \ \ /\ / / _` | '__/ _ \ | __/ _ \/ __| __|
+| | | | (_| | | | (_| |\ V  V / (_| | | |  __/ | ||  __/\__ \ |_ 
+|_| |_|\__,_|_|  \__,_| \_/\_/ \__,_|_|  \___|  \__\___||___/\__|
 
-  hardware test V1.0
+hardware test V1.1
   ------------------
   pb1 toggles led3
   pb2 toggles led2
@@ -46,7 +45,7 @@ unsigned long blinkTime = 200;
 
 void setup() {
   SerialUSB.begin(115200); // USB serial
-  analogReadResolution(8); // ADC resolution (up to 12 bit)
+  analogReadResolution(7); // ADC resolution
   pinMode(pb1Pin, INPUT_PULLUP);
   pinMode(PIN_LED2, OUTPUT);
   pinMode(pb2Pin, INPUT_PULLUP);
@@ -71,8 +70,8 @@ void managePushbuttons() {
       pb1State = readPb1;
       if (pb1State == LOW) {
         pb1Mode = !pb1Mode;
-        if (pb1Mode) Serial.println ("PB1 MODE OFF");
-        else Serial.println ("PB1 MODE ON");
+        if (pb1Mode) Serial.println ("PB1 MODE ON");
+        else Serial.println ("PB1 MODE OFF");
         digitalWrite (PIN_LED3, !pb1Mode);
       }
     }
@@ -88,8 +87,8 @@ void managePushbuttons() {
       pb2State = readPb2;
       if (pb2State == LOW) {
         pb2Mode = !pb2Mode;
-        if (pb2Mode) Serial.println ("PB2 MODE OFF");
-        else Serial.println ("PB2 MODE ON");
+        if (pb2Mode) Serial.println ("PB2 MODE ON");
+        else Serial.println ("PB2 MODE OFF");
         digitalWrite (PIN_LED2, !pb2Mode);
       }
     }
