@@ -27,15 +27,16 @@ On the MIDI side, possible use includes advanced midi controlling, filtering and
 - **blink** the ubiquitous blink sketch    
 
 **Compiling and uploading**  
-To compile and upload the software on the Seeduino Xiao, you'll need:
-- [Arduino IDE](https://www.arduino.cc/en/software)
-- [MIDI library](https://github.com/lathoub/Arduino-USBMIDI)
-- [Mozzi library](https://github.com/sensorium/Mozzi)
-- Adafruit TinyUSB Library for Arduino, install **version 0.10.5** using the [library manager](https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/library-manager)
+Install the [Arduino IDE](https://www.arduino.cc/en/software), last version tested is 2.3.4.  
+Add the Seeeduino Xiao board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.  
+To compile the software, you'll need some libraries, install them from the Arduino IDE Library Manager:  
+- [Mozzi](https://github.com/sensorium/Mozzi), tested with version 2.0.1, also install library dependencies
+- [Adafruit TinyUSB Library](https://github.com/adafruit/Adafruit_TinyUSB_Arduino), tested with version 0.10.5, no dependencies needed
+- [MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library), tested with version 5.0.2  
 
-After installing all the required libraries, you must add the Seeeduino Xiao board to your Arduino IDE. Follow the [instructions to get started](https://wiki.seeedstudio.com/Seeeduino-XIAO/#software) on the SeeedStudio wiki.
+From the Arduino IDE Tools menu, select _TinyUSB_ as USB stack.  
 
- **Sound generation**    
+**Sound generation**    
 Since the Xiao board has a DAC, **multi** can also be used to produce sounds using the [Mozzi sonification library](https://github.com/sensorium/Mozzi) written by Tim Barrass or accessing directly to the DAC output.
 
 
